@@ -1,0 +1,27 @@
+export const Logo = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 64 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-label="directparticulier"
+  >
+    <g>
+      <path
+        fill="#394240"
+        d="M60,0H4C1.789,0,0,1.789,0,4v28h4v28c0,2.211,1.789,4,4,4h48c2.211,0,4-1.789,4-4V32h4V4
+        C64,1.789,62.211,0,60,0z M48,8h8v16h-8V8z M24,8h16v16H24V8z M8,8h8v16H8V8z M52,56H40V40H24v16H12V32h40V56z"
+      />
+      <rect x="24" y="8" width="16" height="16" fill="#B4CCB9" />
+      <g>
+        <rect x="48" y="8" width="8" height="16" fill="#F76D57" />
+        <rect x="8" y="8" width="8" height="16" fill="#F76D57" />
+      </g>
+      <polygon
+        fill="#F9EBB2"
+        points="52,56 40,56 40,40 24,40 24,56 12,56 12,32 52,32"
+      />
+    </g>
+  </svg>
+);
