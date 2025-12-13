@@ -4,12 +4,10 @@ export const dynamic = "force-dynamic";
 
 import { supabasePublic } from "@/lib/supabase/supabase-public";
 import Link from "next/link";
-import { Suspense } from "react";
-import { AuthButton } from "@/components/auth-button"; 
-import { ListingCard } from "@/components/ListingCard"; 
-import { getFullPublicUrl } from '@/lib/supabase/storage'; // Pour reconstruire l'URL de l'image
+import { ListingCard } from "@/components/ListingCard";
+import { getFullPublicUrl } from "@/lib/supabase/storage";
 
-// --- Interfaces de Typescript ---
+// --- Interfaces ---
 
 interface ListingImage {
   image_url: string; // ex: '24/17...jpg'
@@ -19,87 +17,99 @@ interface ListingImage {
 interface ListingData {
   id: number;
   title: string;
+  property_type: string;
+  room_count: number | null;
+  zip_code: string;
+  city:string;
+  surface_area_m2: number | null; // ✅ AJOUT
   price: number;
   latitude: number;
   longitude: number;
-  listing_images: ListingImage[]; 
+  listing_images: ListingImage[];
 }
 
-// Le type final prêt pour la carte (avec l'URL déjà calculée)
 interface ListingForCard {
-    id: number;
-    title: string;
-    price: number;
-    latitude: number;
-    longitude: number;
-    imageUrl: string; 
+  id: number;
+  title: string;
+  property_type: string;
+  room_count: number | null;
+  zip_code: string;
+  city:string;
+  surface_area_m2: number | null; // ✅ AJOUT
+  price: number;
+  latitude: number;
+  longitude: number;
+  imageUrl: string;
 }
 
 
-// --- Composant principal ---
+// --- Page principale ---
 
 export default async function Home() {
-  
-  // 1. Récupération des données avec jointure des images
   const { data: listings, error } = await supabasePublic
     .from("listings")
     .select(`
-      id, 
-      title, 
-      price, 
-      latitude, 
+      id,
+      title,
+      property_type,
+      room_count,
+      surface_area_m2,
+      zip_code,
+      price,
+      city,
+      latitude,
       longitude,
-      listing_images (image_url, sort_order) 
+      listing_images (image_url, sort_order)
     `)
     .eq("is_published", true)
-    .order('created_at', { ascending: false }) // Les plus récentes en premier
-    .limit(28) as { data: ListingData[] | null, error: any }; // Forçage de type pour la sélection JOINED
+    .order("created_at", { ascending: false })
+    .limit(28) as { data: ListingData[] | null; error: any };
 
   if (error) {
     console.error("Erreur lors du chargement des annonces:", error);
     return (
       <main className="min-h-screen p-5">
         <div className="text-center mt-20 text-red-600">
-          Erreur lors du chargement des annonces. (Vérifiez les RLS SELECT et les permissions du rôle anon).
+          Erreur lors du chargement des annonces.
         </div>
       </main>
     );
   }
-  
-  // 2. Traitement des données : Trouver l'image principale et calculer son URL
-  const listingsWithImages: ListingForCard[] = listings?.map(listing => {
-    // Triez par sort_order pour trouver l'image principale (sort_order = 1)
-    const primaryImage = listing.listing_images
-      .sort((a, b) => a.sort_order - b.sort_order)[0];
 
-    // Reconstruire l'URL publique complète
-    const imageUrl = primaryImage ? getFullPublicUrl(primaryImage.image_url) : '/placeholder.png'; // Image par défaut si aucune image
+  const listingsWithImages: ListingForCard[] =
+    listings?.map((listing) => {
+      const primaryImage = listing.listing_images
+        .sort((a, b) => a.sort_order - b.sort_order)[0];
 
-    return {
-      id: listing.id,
-      title: listing.title,
-      price: listing.price,
-      latitude: listing.latitude,
-      longitude: listing.longitude,
-      imageUrl,
-    };
-  }) || [];
+      const imageUrl = primaryImage
+        ? getFullPublicUrl(primaryImage.image_url)
+        : "/placeholder.png";
 
+      return {
+        id: listing.id,
+        title: listing.title,
+        property_type: listing.property_type,
+        zip_code: listing.zip_code,
+        city: listing.city,
+        room_count: listing.room_count, // ✅ TRANSMIS
+        surface_area_m2:listing.surface_area_m2,
+        price: listing.price,
+        latitude: listing.latitude,
+        longitude: listing.longitude,
+        imageUrl,
+      };
+    }) || [];
 
   return (
-    <main className="min-h-screen flex flex-col items-center ">
-      
-      
-
-      {/* --- Grille des Annonces (Style Airbnb) --- */}
-      <div className="w-full  p-5 md:p-10">
-       
-        
+    <main className="min-h-screen flex flex-col items-center">
+      <div className="w-full p-5 md:p-10">
         {listingsWithImages.length > 0 ? (
-          <div 
-            // Mise en page en grille responsive : 7 colonnes sur très grand écran
-            className="grid gap-x-4 gap-y-8 
-                       grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7"
+          <div
+            className="
+              grid gap-x-4 gap-y-8
+              grid-cols-2 sm:grid-cols-3 md:grid-cols-4
+              lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7
+            "
           >
             {listingsWithImages.map((listing) => (
               <ListingCard key={listing.id} listing={listing} />
@@ -107,7 +117,7 @@ export default async function Home() {
           </div>
         ) : (
           <div className="text-center p-20 border rounded-lg mt-10 text-gray-500">
-            Aucune annonce publiée n'a été trouvée pour le moment.
+            Aucune annonce publiée n'a été trouvée.
             <p className="mt-2">
               <Link href="/create" className="text-blue-600 hover:underline">
                 Créer la première annonce ?
@@ -116,8 +126,8 @@ export default async function Home() {
           </div>
         )}
       </div>
-      
-      <footer className="w-full border-t mx-auto text-center text-xs gap-8 py-8 mt-auto">
+
+      <footer className="w-full border-t text-center text-xs py-8 mt-auto">
         <p>© 2025 Listings App</p>
       </footer>
     </main>
