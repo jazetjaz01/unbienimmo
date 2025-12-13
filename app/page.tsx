@@ -1,16 +1,16 @@
-// app/page.tsx
-// ⚠️ Important pour Next 16 + Turbopack : Assure que la récupération de données est dynamique
+// ⚠️ Important pour Next 16 + Turbopack
 export const dynamic = "force-dynamic";
 
 import { supabasePublic } from "@/lib/supabase/supabase-public";
 import Link from "next/link";
 import { ListingCard } from "@/components/ListingCard";
 import { getFullPublicUrl } from "@/lib/supabase/storage";
+import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
 
 // --- Interfaces ---
 
 interface ListingImage {
-  image_url: string; // ex: '24/17...jpg'
+  image_url: string;
   sort_order: number;
 }
 
@@ -19,9 +19,10 @@ interface ListingData {
   title: string;
   property_type: string;
   room_count: number | null;
+  surface_area_m2: number | null;
   zip_code: string;
-  city:string;
-  surface_area_m2: number | null; // ✅ AJOUT
+  city: string;
+  exclusivite_agence: boolean; // ✅ AJOUT
   price: number;
   latitude: number;
   longitude: number;
@@ -33,15 +34,16 @@ interface ListingForCard {
   title: string;
   property_type: string;
   room_count: number | null;
+  surface_area_m2: number | null;
   zip_code: string;
-  city:string;
-  surface_area_m2: number | null; // ✅ AJOUT
+  city: string;
+  exclusivite_agence: boolean; // ✅ AJOUT
   price: number;
+  created_at:Timestamp;
   latitude: number;
   longitude: number;
   imageUrl: string;
 }
-
 
 // --- Page principale ---
 
@@ -55,8 +57,10 @@ export default async function Home() {
       room_count,
       surface_area_m2,
       zip_code,
-      price,
       city,
+      exclusivite_agence,
+      created_at,
+      price,
       latitude,
       longitude,
       listing_images (image_url, sort_order)
@@ -89,11 +93,13 @@ export default async function Home() {
         id: listing.id,
         title: listing.title,
         property_type: listing.property_type,
+        room_count: listing.room_count,
+        surface_area_m2: listing.surface_area_m2,
         zip_code: listing.zip_code,
         city: listing.city,
-        room_count: listing.room_count, // ✅ TRANSMIS
-        surface_area_m2:listing.surface_area_m2,
+        exclusivite_agence: listing.exclusivite_agence, // ✅ TRANSMIS
         price: listing.price,
+        created_at: listing.created_at,
         latitude: listing.latitude,
         longitude: listing.longitude,
         imageUrl,
