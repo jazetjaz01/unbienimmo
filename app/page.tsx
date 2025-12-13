@@ -22,6 +22,7 @@ interface ListingData {
   surface_area_m2: number | null;
   zip_code: string;
   city: string;
+  created_at: Timestamp,
   exclusivite_agence: boolean; // ✅ AJOUT
   price: number;
   latitude: number;
@@ -37,9 +38,10 @@ interface ListingForCard {
   surface_area_m2: number | null;
   zip_code: string;
   city: string;
+  created_at: Timestamp,
   exclusivite_agence: boolean; // ✅ AJOUT
   price: number;
-  created_at:Timestamp;
+  
   latitude: number;
   longitude: number;
   imageUrl: string;
