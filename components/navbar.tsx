@@ -8,7 +8,7 @@ import { TransactionToggle } from "./TransactionToogle"
 
 const Navbar = () => {
   return (
-    <nav className="bg-gradient-to-t from-gray-100 to-white border-b">
+    <nav className="bg-gradient-to-t from-gray-100 to-white ">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* 🔹 LIGNE 1 */}

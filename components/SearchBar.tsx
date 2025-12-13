@@ -36,7 +36,9 @@ export function SearchBar() {
         className={`
           relative flex flex-col justify-center px-6 py-2
           cursor-pointer rounded-full transition
-          ${isActive ? 'bg-gray-100 shadow-md' : 'hover:bg-gray-50'}
+          bg-transparent
+          ${isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}
+          focus-within:bg-gray-100
         `}
       >
         <span className="text-[11px] font-semibold text-gray-800">
@@ -50,7 +52,9 @@ export function SearchBar() {
           className="
             border-none p-0 h-auto bg-transparent
             text-sm text-gray-700
-            focus:outline-none focus:ring-0
+            focus:outline-none
+            focus:ring-0
+            focus-visible:ring-0
           "
         />
 
@@ -69,7 +73,7 @@ export function SearchBar() {
         rounded-full border
         shadow-md hover:shadow-xl
         transition-shadow
-        w-full max-w-3xl
+        w-full max-w-2xl
       "
     >
       <SegmentWrapper
@@ -104,6 +108,9 @@ export function SearchBar() {
             bg-rose-600 hover:bg-rose-700
             flex items-center justify-center
             shadow-md
+            focus:outline-none
+            focus:ring-0
+            focus-visible:ring-0
           "
         >
           <Search className="h-5 w-5 text-white" />
