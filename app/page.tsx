@@ -5,7 +5,6 @@ import { supabasePublic } from "@/lib/supabase/supabase-public";
 import Link from "next/link";
 import { ListingCard } from "@/components/ListingCard";
 import { getFullPublicUrl } from "@/lib/supabase/storage";
-import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
 
 // --- Interfaces ---
 
@@ -22,8 +21,8 @@ interface ListingData {
   surface_area_m2: number | null;
   zip_code: string;
   city: string;
-  created_at: Timestamp,
-  exclusivite_agence: boolean; // ✅ AJOUT
+  created_at: string; // ✅ STRING
+  exclusivite_agence: boolean;
   price: number;
   latitude: number;
   longitude: number;
@@ -38,10 +37,9 @@ interface ListingForCard {
   surface_area_m2: number | null;
   zip_code: string;
   city: string;
-  created_at: Timestamp,
-  exclusivite_agence: boolean; // ✅ AJOUT
+  created_at: string; // ✅ STRING
+  exclusivite_agence: boolean;
   price: number;
-  
   latitude: number;
   longitude: number;
   imageUrl: string;
@@ -99,9 +97,9 @@ export default async function Home() {
         surface_area_m2: listing.surface_area_m2,
         zip_code: listing.zip_code,
         city: listing.city,
-        exclusivite_agence: listing.exclusivite_agence, // ✅ TRANSMIS
-        price: listing.price,
+        exclusivite_agence: listing.exclusivite_agence,
         created_at: listing.created_at,
+        price: listing.price,
         latitude: listing.latitude,
         longitude: listing.longitude,
         imageUrl,

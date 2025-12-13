@@ -11,7 +11,7 @@ interface ListingCardProps {
     room_count: number | null
     surface_area_m2: number | null
     exclusivite_agence: boolean
-    created_at: string // ✅ AJOUT
+    created_at: string
     price: number
     imageUrl: string
   }
@@ -36,13 +36,12 @@ export function ListingCard({ listing }: ListingCardProps) {
       ? `${listing.surface_area_m2} m²`
       : null
 
-  // ✅ LOGIQUE "NOUVEAU" (≤ 7 jours)
+  // ✅ NOUVEAUTÉ = moins de 7 jours
   const isNew = (() => {
-    const createdAt = new Date(listing.created_at)
-    const now = new Date()
-    const diffInDays =
-      (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
-    return diffInDays <= 7
+    const created = new Date(listing.created_at).getTime()
+    const now = Date.now()
+    const days = (now - created) / (1000 * 60 * 60 * 24)
+    return days <= 7
   })()
 
   return (
@@ -50,40 +49,23 @@ export function ListingCard({ listing }: ListingCardProps) {
       {/* IMAGE */}
       <div className="relative w-full aspect-[4/3] overflow-hidden rounded-xl mb-2">
 
-        {/* ✅ BADGES (Airbnb-like) */}
-        <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
-
-          {listing.exclusivite_agence && (
-            <span className="
-              bg-gray-100
-              text-gray-900
-              text-xs
-              font-semibold
-              px-3
-              py-1
-              rounded-full
-              shadow-sm
-            ">
+        {/* BADGE EXCLUSIVITÉ */}
+        {listing.exclusivite_agence && (
+          <div className="absolute top-3 left-3 z-10">
+            <span className="bg-gray-100 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
               Exclusivité
             </span>
-          )}
+          </div>
+        )}
 
-          {isNew && (
-            <span className="
-              bg-teal-500
-              text-white
-              text-xs
-              font-semibold
-              px-3
-              py-1
-              rounded-full
-              shadow-sm
-            ">
+        {/* BADGE NOUVEAU */}
+        {isNew && (
+          <div className="absolute top-3 right-3 z-10">
+            <span className="bg-teal-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
               Nouveau
             </span>
-          )}
-
-        </div>
+          </div>
+        )}
 
         <Image
           src={listing.imageUrl}
@@ -96,16 +78,15 @@ export function ListingCard({ listing }: ListingCardProps) {
 
       {/* DÉTAILS */}
       <div className="p-1 text-sm">
-        <h3 className="font-normal text-gray-600 truncate">
+        <h3 className="text-gray-600 truncate">
           {listing.property_type}
-
-          {roomLabel && <> • {roomLabel}</>}
-          {surfaceLabel && <> • {surfaceLabel}</>}
+          {roomLabel && ` • ${roomLabel}`}
+          {surfaceLabel && ` • ${surfaceLabel}`}
         </h3>
 
-        <div className="flex gap-2">
-          <p className="text-gray-700 mt-1">{listing.zip_code}</p>
-          <p className="text-gray-700 mt-1">{listing.city}</p>
+        <div className="flex gap-2 text-gray-700 mt-1">
+          <span>{listing.zip_code}</span>
+          <span>{listing.city}</span>
         </div>
 
         <p className="text-teal-700 mt-1 font-bold">
