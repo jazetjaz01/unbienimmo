@@ -16,16 +16,14 @@ export default function Navbar() {
         <div className="h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
-            <span className="text-lg font-semibold text-gray-900">unbienimmo</span>
+            <span className="text-lg font-semibold hidden md:block">unbienimmo</span>
           </Link>
 <SearchBarClient />
           <div className="flex items-center gap-3">
             <Suspense>
             <AuthButton />
             </Suspense>
-            <div className="md:hidden">
-              <NavigationSheet />
-            </div>
+            
           </div>
         </div>
 

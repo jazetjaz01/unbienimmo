@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+// ... (Définitions de types et fonctions utilitaires inchangées)
 
 // Définitions de types (inchangées)
 export interface SearchParams {
@@ -44,21 +45,17 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   const [minPrice, setMinPrice] = React.useState('')
   const [maxPrice, setMaxPrice] = React.useState('')
 
-  // ➡️ Fonction utilitaire pour extraire la ville seule du nom formaté
+  // ➡️ Fonctions utilitaires (inchangées)
   const extractCityName = (formattedCity: string): string => {
-    // Si la chaîne contient le séparateur ' • ', on prend tout ce qui est avant.
     const separatorIndex = formattedCity.indexOf(' • ');
     if (separatorIndex !== -1) {
       return formattedCity.substring(0, separatorIndex).trim();
     }
-    // Sinon, on retourne la chaîne telle quelle.
     return formattedCity.trim();
   }
 
-
-  // ➡️ Fonction pour formater le nom de la ville + Code Postal ou Département (pour l'affichage)
   const formatCityName = (place: MapboxFeature): string => {
-    // ... (Logique inchangée pour déterminer le 'detail': CP ou Département)
+    // ... (Logique inchangée)
     let detail = ''; 
     const cityName = place.text;
 
@@ -96,8 +93,9 @@ export function SearchBar({ onSearch }: SearchBarProps) {
     return cityName;
   }
   
-  // 🔹 Autocomplete Mapbox (avec Debounce)
+  // 🔹 Autocomplete Mapbox (inchangé)
   React.useEffect(() => {
+    // ... (Logique Autocomplete inchangée)
     const delayDebounceFn = setTimeout(() => {
       if (city.length < 2) {
         setSuggestions([])
@@ -141,12 +139,10 @@ export function SearchBar({ onSearch }: SearchBarProps) {
     return () => clearTimeout(delayDebounceFn) 
   }, [city])
 
+  // ... (Fonctions handleSubmit et handleCitySelect inchangées)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    // ✅ CORRECTION CLÉ : Nettoyer la chaîne 'city' avant de l'envoyer à la recherche
     const cityForSearch = extractCityName(city);
-
     onSearch({ 
         city: cityForSearch, 
         propertyType, 
@@ -156,12 +152,10 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   }
 
   const handleCitySelect = (place: MapboxFeature) => {
-    // Mettre à jour l'input avec le nom formaté (pour l'affichage complet)
     setCity(formatCityName(place)) 
     setSuggestions([])
   }
 
-  // Empêche l'Input de perdre le focus au clic
   const handleMouseDown = (e: React.MouseEvent) => {
       e.preventDefault(); 
   }
@@ -178,7 +172,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         w-full max-w-2xl
       "
     >
-      {/* 🔍 Ville avec autocomplete */}
+      {/* 🔍 Ville avec autocomplete (TOUJOURS AFFICHÉ) */}
       <div className="relative flex-1">
         <Input
           value={city}
@@ -210,30 +204,32 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         )}
       </div>
 
-      {/* Type */}
+      {/* Type - MASQUÉ SUR MOBILE (sm:hidden) et AFFICHÉ À PARTIR DE 'MD' */}
       <Input
         value={propertyType}
         onChange={(e) => setPropertyType(e.target.value)}
         placeholder="Type de bien"
-        className="border-none bg-transparent flex-1"
+        className="border-none bg-transparent flex-1 hidden md:flex"
       />
 
-      {/* Budget */}
+      {/* Budget Min - MASQUÉ SUR MOBILE (sm:hidden) et AFFICHÉ À PARTIR DE 'MD' */}
       <Input
         value={minPrice}
         onChange={(e) => setMinPrice(e.target.value)}
         placeholder="Min €"
         type="number"
-        className="border-none bg-transparent w-24"
+        className="border-none bg-transparent w-24 hidden md:flex"
       />
+      {/* Budget Max - MASQUÉ SUR MOBILE (sm:hidden) et AFFICHÉ À PARTIR DE 'MD' */}
       <Input
         value={maxPrice}
         onChange={(e) => setMaxPrice(e.target.value)}
         placeholder="Max €"
         type="number"
-        className="border-none bg-transparent w-24"
+        className="border-none bg-transparent w-24 hidden md:flex"
       />
 
+      {/* Bouton Search (TOUJOURS AFFICHÉ) */}
       <Button
         type="submit"
         className="h-10 w-10 rounded-full bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-0 focus-visible:ring-0"
