@@ -1,49 +1,40 @@
-import Link from "next/link"
-import { Suspense } from "react"
-import { Logo } from "@/components/logo"
-import { AuthButton } from "@/components/auth-button"
-import { NavigationSheet } from "@/components/navigation-sheet"
-import { SearchBar } from "@/components/SearchBar"
-import { TransactionToggle } from "./TransactionToogle"
+'use client'
 
-const Navbar = () => {
+import * as React from 'react'
+import Link from 'next/link'
+import { Logo } from '@/components/logo'
+import { AuthButton } from '@/components/auth-button'
+import { NavigationSheet } from '@/components/navigation-sheet'
+import { SearchBarClient } from '@/components/SearchBarClient'
+import { Suspense } from 'react'
+export default function Navbar() {
   return (
-    <nav className="bg-gradient-to-t from-gray-100 to-white ">
+    <nav className="bg-gradient-to-t from-gray-100 to-white">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* 🔹 LIGNE 1 */}
+        {/* Ligne 1 : Logo + Auth + Menu mobile */}
         <div className="h-16 flex items-center justify-between">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Logo />
-            <span className="text-lg font-semibold text-gray-900">
-              unbienimmo
-            </span>
+            <span className="text-lg font-semibold text-gray-900">unbienimmo</span>
           </Link>
 
-          {/* Achat / Location */}
-          <TransactionToggle />
-
-          {/* Auth */}
           <div className="flex items-center gap-3">
             <Suspense>
-              <AuthButton />
+            <AuthButton />
             </Suspense>
-
             <div className="md:hidden">
               <NavigationSheet />
             </div>
           </div>
         </div>
 
-        {/* 🔹 LIGNE 2 */}
+        {/* Ligne 2 : SearchBar */}
         <div className="pb-4 flex justify-center">
-          <SearchBar />
+          <SearchBarClient />
         </div>
 
       </div>
     </nav>
   )
 }
-
-export default Navbar

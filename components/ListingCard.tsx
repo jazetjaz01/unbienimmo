@@ -13,7 +13,7 @@ interface ListingCardProps {
     exclusivite_agence: boolean
     created_at: string
     price: number
-    imageUrl: string
+    imageUrl?: string // ⚠ rendre optionnel
   }
 }
 
@@ -36,7 +36,6 @@ export function ListingCard({ listing }: ListingCardProps) {
       ? `${listing.surface_area_m2} m²`
       : null
 
-  // ✅ NOUVEAUTÉ = moins de 7 jours
   const isNew = (() => {
     const created = new Date(listing.created_at).getTime()
     const now = Date.now()
@@ -44,12 +43,15 @@ export function ListingCard({ listing }: ListingCardProps) {
     return days <= 7
   })()
 
+  // ✅ si imageUrl vide, utiliser un placeholder
+  const imageSrc = listing.imageUrl && listing.imageUrl.trim() !== ''
+    ? listing.imageUrl
+    : '/placeholder-image.jpg'
+
   return (
     <Link href={`/listings/${listing.id}`} className="group block cursor-pointer">
       {/* IMAGE */}
       <div className="relative w-full aspect-[4/3] overflow-hidden rounded-xl mb-2">
-
-        {/* BADGE EXCLUSIVITÉ */}
         {listing.exclusivite_agence && (
           <div className="absolute top-3 left-3 z-10">
             <span className="bg-gray-100 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
@@ -57,8 +59,6 @@ export function ListingCard({ listing }: ListingCardProps) {
             </span>
           </div>
         )}
-
-        {/* BADGE NOUVEAU */}
         {isNew && (
           <div className="absolute top-3 right-3 z-10">
             <span className="bg-teal-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
@@ -68,8 +68,8 @@ export function ListingCard({ listing }: ListingCardProps) {
         )}
 
         <Image
-          src={listing.imageUrl}
-          alt={listing.title}
+          src={imageSrc}
+          alt={listing.title || 'Annonce'}
           fill
           className="transition-transform duration-300 group-hover:scale-105 object-cover"
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"

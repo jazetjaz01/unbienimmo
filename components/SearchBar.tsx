@@ -5,117 +5,241 @@ import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-type Segment = 'location' | 'type' | 'budget' | null
+// Définitions de types (inchangées)
+export interface SearchParams {
+  city: string
+  propertyType: string
+  minPrice: string
+  maxPrice: string
+}
 
-export function SearchBar() {
-  const [location, setLocation] = React.useState('')
+interface SearchBarProps {
+  onSearch: (params: SearchParams) => void
+}
+
+// Type Mapbox Feature ajusté
+interface MapboxFeature {
+  id: string
+  place_name: string 
+  text: string 
+  context?: {
+    text: string 
+    id: string    
+    short_code?: string 
+  }[]
+  properties: {
+    postcode?: string
+    address?: string
+    short_code?: string
+    wikidata?: string
+  }
+}
+
+export function SearchBar({ onSearch }: SearchBarProps) {
+  const [city, setCity] = React.useState('')
+  const [suggestions, setSuggestions] = React.useState<MapboxFeature[]>([])
+  const [loadingCities, setLoadingCities] = React.useState(false)
+
   const [propertyType, setPropertyType] = React.useState('')
   const [minPrice, setMinPrice] = React.useState('')
-  const [activeSegment, setActiveSegment] = React.useState<Segment>(null)
+  const [maxPrice, setMaxPrice] = React.useState('')
 
-  const SegmentWrapper = ({
-    label,
-    placeholder,
-    value,
-    onChange,
-    segment,
-    showDivider = true,
-  }: {
-    label: string
-    placeholder: string
-    value: string
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    segment: Segment
-    showDivider?: boolean
-  }) => {
-    const isActive = activeSegment === segment
+  // ➡️ Fonction utilitaire pour extraire la ville seule du nom formaté
+  const extractCityName = (formattedCity: string): string => {
+    // Si la chaîne contient le séparateur ' • ', on prend tout ce qui est avant.
+    const separatorIndex = formattedCity.indexOf(' • ');
+    if (separatorIndex !== -1) {
+      return formattedCity.substring(0, separatorIndex).trim();
+    }
+    // Sinon, on retourne la chaîne telle quelle.
+    return formattedCity.trim();
+  }
 
-    return (
-      <div
-        onClick={() => setActiveSegment(segment)}
-        className={`
-          relative flex flex-col justify-center px-6 py-2
-          cursor-pointer rounded-full transition
-          bg-transparent
-          ${isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}
-          focus-within:bg-gray-100
-        `}
-      >
-        <span className="text-[11px] font-semibold text-gray-800">
-          {label}
-        </span>
 
-        <Input
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className="
-            border-none p-0 h-auto bg-transparent
-            text-sm text-gray-700
-            focus:outline-none
-            focus:ring-0
-            focus-visible:ring-0
-          "
-        />
+  // ➡️ Fonction pour formater le nom de la ville + Code Postal ou Département (pour l'affichage)
+  const formatCityName = (place: MapboxFeature): string => {
+    // ... (Logique inchangée pour déterminer le 'detail': CP ou Département)
+    let detail = ''; 
+    const cityName = place.text;
 
-        {showDivider && (
-          <div className="absolute right-0 top-1/2 h-6 w-px bg-gray-200 -translate-y-1/2" />
-        )}
-      </div>
-    )
+    // --- 1. Tentative d'extraction du Code Postal (CP) ---
+    if (place.properties?.postcode) {
+      detail = place.properties.postcode;
+    } 
+    if (!detail && place.context) {
+      const postcodeContext = place.context.find(c => c.id.startsWith('postcode.'));
+      if (postcodeContext) {
+        detail = postcodeContext.text;
+      }
+    }
+
+    // --- 2. Si CP non trouvé, extraction du Département (Nom) ---
+    if (!detail && place.context) {
+        const departmentCodeItem = place.context.find(c => 
+            c.short_code && c.short_code.startsWith('FR-') && c.short_code.length <= 6
+        );
+
+        if (departmentCodeItem) {
+            detail = departmentCodeItem.text;
+        }
+
+        if (detail && detail.toLowerCase() === cityName.toLowerCase()) {
+            detail = '';
+        }
+    }
+
+    // 3. Retourner le format (Ville • Détail) pour l'AFFICHAGE
+    if (detail) {
+        return `${cityName} • ${detail}`; 
+    }
+    
+    return cityName;
+  }
+  
+  // 🔹 Autocomplete Mapbox (avec Debounce)
+  React.useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (city.length < 2) {
+        setSuggestions([])
+        return
+      }
+
+      const controller = new AbortController()
+
+      const fetchCities = async () => {
+        setLoadingCities(true)
+        try {
+          const res = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+              city
+            )}.json?` +
+              new URLSearchParams({
+                access_token: process.env.NEXT_PUBLIC_MAPBOX_TOKEN!,
+                country: 'fr',
+                types: 'place,postcode,locality,region', 
+                language: 'fr',
+                limit: '5',
+              }),
+            { signal: controller.signal }
+          )
+
+          const data = await res.json()
+          setSuggestions(data.features || [])
+        } catch (err) {
+          if ((err as any).name !== 'AbortError') {
+            console.error(err)
+          }
+        } finally {
+          setLoadingCities(false)
+        }
+      }
+
+      fetchCities()
+      return () => controller.abort()
+    }, 300) 
+
+    return () => clearTimeout(delayDebounceFn) 
+  }, [city])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // ✅ CORRECTION CLÉ : Nettoyer la chaîne 'city' avant de l'envoyer à la recherche
+    const cityForSearch = extractCityName(city);
+
+    onSearch({ 
+        city: cityForSearch, 
+        propertyType, 
+        minPrice, 
+        maxPrice 
+    })
+  }
+
+  const handleCitySelect = (place: MapboxFeature) => {
+    // Mettre à jour l'input avec le nom formaté (pour l'affichage complet)
+    setCity(formatCityName(place)) 
+    setSuggestions([])
+  }
+
+  // Empêche l'Input de perdre le focus au clic
+  const handleMouseDown = (e: React.MouseEvent) => {
+      e.preventDefault(); 
   }
 
   return (
-    <div
+    <form
+      onSubmit={handleSubmit}
       className="
-        flex items-center
-        h-16 bg-white
+        relative flex items-center
+        h-12 bg-white
         rounded-full border
-        shadow-md hover:shadow-xl
-        transition-shadow
+        shadow-sm hover:shadow-md
+        px-4 gap-2
         w-full max-w-2xl
       "
     >
-      <SegmentWrapper
-        label="Ville"
-        placeholder="Où allez-vous ?"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-        segment="location"
-      />
+      {/* 🔍 Ville avec autocomplete */}
+      <div className="relative flex-1">
+        <Input
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          placeholder="Ville"
+          className="border-none bg-transparent w-full"
+        />
 
-      <SegmentWrapper
-        label="Type"
-        placeholder="Appartement, maison…"
+        {suggestions.length > 0 && (
+          <ul 
+            onMouseDown={handleMouseDown}
+            className="absolute z-50 top-12 left-0 right-0 bg-white border rounded-lg shadow-lg overflow-hidden"
+          >
+            {suggestions.map((item) => (
+              <li
+                key={item.id}
+                onClick={() => handleCitySelect(item)}
+                className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm"
+              >
+                {formatCityName(item)} 
+              </li>
+            ))}
+          </ul>
+        )}
+        {loadingCities && city.length >= 2 && (
+            <div className="absolute z-50 top-12 left-0 right-0 bg-white border rounded-lg shadow-lg px-4 py-2 text-sm text-gray-500">
+                Chargement...
+            </div>
+        )}
+      </div>
+
+      {/* Type */}
+      <Input
         value={propertyType}
         onChange={(e) => setPropertyType(e.target.value)}
-        segment="type"
+        placeholder="Type de bien"
+        className="border-none bg-transparent flex-1"
       />
 
-      <SegmentWrapper
-        label="Budget"
-        placeholder="Prix minimum"
+      {/* Budget */}
+      <Input
         value={minPrice}
         onChange={(e) => setMinPrice(e.target.value)}
-        segment="budget"
-        showDivider={false}
+        placeholder="Min €"
+        type="number"
+        className="border-none bg-transparent w-24"
+      />
+      <Input
+        value={maxPrice}
+        onChange={(e) => setMaxPrice(e.target.value)}
+        placeholder="Max €"
+        type="number"
+        className="border-none bg-transparent w-24"
       />
 
-      <div className="px-3">
-        <Button
-          className="
-            h-12 w-12 rounded-full
-            bg-rose-600 hover:bg-rose-700
-            flex items-center justify-center
-            shadow-md
-            focus:outline-none
-            focus:ring-0
-            focus-visible:ring-0
-          "
-        >
-          <Search className="h-5 w-5 text-white" />
-        </Button>
-      </div>
-    </div>
+      <Button
+        type="submit"
+        className="h-10 w-10 rounded-full bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-0 focus-visible:ring-0"
+      >
+        <Search className="h-5 w-5 text-white" />
+      </Button>
+    </form>
   )
 }

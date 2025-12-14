@@ -1,15 +1,31 @@
-import Link from "next/link";
-import { Button } from "./ui/button";
-import { createClient } from "@/lib/supabase/server";
-import { LogoutButton } from "./logout-button";
+'use client'
 
-export async function AuthButton() {
-  const supabase = await createClient();
+import * as React from 'react'
+import Link from 'next/link'
+import { Button } from './ui/button'
 
-  // You can also use getUser() which will be slower.
-  const { data } = await supabase.auth.getClaims();
+import { supabasePublic } from '@/lib/supabase/supabase-public'
+import { LogoutButton } from './logout-button'
 
-  const user = data?.claims;
+export function AuthButton() {
+  const [user, setUser] = React.useState<any>(null)
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data } = await supabasePublic.auth.getUser()
+        setUser(data?.user || null)
+      } catch {
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchUser()
+  }, [])
+
+  if (loading) return <div>Loading...</div>
 
   return user ? (
     <div className="flex items-center gap-4">
@@ -18,12 +34,12 @@ export async function AuthButton() {
     </div>
   ) : (
     <div className="flex gap-2">
-      <Button asChild size="sm" variant={"outline"}>
+      <Button asChild size="sm" variant="outline">
         <Link href="/auth/login">Sign in</Link>
       </Button>
-      <Button asChild size="sm" variant={"default"}>
+      <Button asChild size="sm" variant="default">
         <Link href="/auth/sign-up">Sign up</Link>
       </Button>
     </div>
-  );
+  )
 }

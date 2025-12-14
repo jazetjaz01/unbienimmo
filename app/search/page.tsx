@@ -1,0 +1,153 @@
+'use client'
+
+import * as React from 'react'
+import { useSearchParams } from 'next/navigation'
+import { supabasePublic } from '@/lib/supabase/supabase-public'
+import { getFullPublicUrl } from '@/lib/supabase/storage' 
+
+// Nouveaux imports
+import { MapAndListLayout } from '@/components/MapAndListLayout' 
+import { ListingsList } from '@/components/ListingsList'
+import { MapboxMap } from '@/components/MapboxMap' 
+import Link from 'next/link'
+
+// --- Interfaces (à conserver dans ce fichier) ---
+// ... (les mêmes interfaces ListingImage, ListingData, ListingForCard)
+
+interface ListingImage {
+  image_url: string;
+  sort_order: number;
+}
+
+interface ListingData {
+  id: number;
+  title: string;
+  property_type: string;
+  room_count: number | null;
+  surface_area_m2: number | null;
+  zip_code: string;
+  city: string;
+  created_at: string;
+  exclusivite_agence: boolean;
+  price: number;
+  latitude: number; // ⬅️ IMPORTANT : Assurez-vous que latitude et longitude sont incluses
+  longitude: number;
+  listing_images: ListingImage[]; 
+}
+
+interface ListingForCard {
+    id: number;
+    title: string;
+    property_type: string;
+    room_count: number | null;
+    surface_area_m2: number | null;
+    zip_code: string;
+    city: string;
+    created_at: string;
+    exclusivite_agence: boolean;
+    price: number;
+    imageUrl: string;
+    // ⬅️ NOUVEAU : Ajout des coordonnées pour la carte
+    latitude: number;
+    longitude: number; 
+}
+
+const extractCityName = (formattedCity: string): string => {
+  const separatorIndex = formattedCity.indexOf(' • ');
+  if (separatorIndex !== -1) {
+    return formattedCity.substring(0, separatorIndex).trim();
+  }
+  return formattedCity.trim();
+}
+
+
+export default function SearchPage() {
+  const searchParams = useSearchParams()
+
+  const cityParam = searchParams.get('city') || ''
+  const propertyType = searchParams.get('propertyType') || ''
+  const minPrice = searchParams.get('minPrice') || ''
+  const maxPrice = searchParams.get('maxPrice') || ''
+
+  const [listings, setListings] = React.useState<ListingForCard[]>([])
+  const [loading, setLoading] = React.useState(false)
+
+  const city = extractCityName(cityParam);
+
+  React.useEffect(() => {
+    const fetchListings = async () => {
+      setLoading(true)
+
+      let query = supabasePublic.from('listings').select(`
+        id,
+        title,
+        property_type,
+        room_count,
+        surface_area_m2,
+        zip_code,
+        city,
+        exclusivite_agence,
+        created_at,
+        price,
+        latitude, 
+        longitude,
+        listing_images (image_url, sort_order)
+      `);
+
+      if (city) query = query.ilike('city', `%${city}%`)
+      if (propertyType) query = query.ilike('property_type', `%${propertyType}%`)
+
+      const min = parseInt(minPrice)
+      const max = parseInt(maxPrice)
+
+      if (!isNaN(min)) query = query.gte('price', min)
+      if (!isNaN(max)) query = query.lte('price', max)
+
+      const { data, error } = await query
+        .eq("is_published", true)
+        .order('created_at', { ascending: false })
+        .limit(50) as { data: ListingData[] | null; error: any };
+
+      if (error) {
+        console.error("Erreur Supabase lors du fetch des annonces de recherche:", error);
+        setListings([]);
+        setLoading(false);
+        return;
+      }
+      
+      const listingsWithImages: ListingForCard[] = (data || []).map((listing: ListingData) => {
+          const primaryImage = listing.listing_images
+            .sort((a, b) => a.sort_order - b.sort_order)[0];
+
+          const imageUrl = primaryImage
+            ? getFullPublicUrl(primaryImage.image_url)
+            : "/placeholder.png";
+
+          return {
+            ...listing,
+            imageUrl,
+          };
+      });
+
+      setListings(listingsWithImages)
+      setLoading(false)
+    }
+
+    fetchListings()
+  }, [cityParam, propertyType, minPrice, maxPrice]) 
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">
+        Résultats de la recherche {cityParam ? `pour "${cityParam}"` : ''} ({loading ? '...' : listings.length})
+      </h1>
+
+      {/* ⬅️ UTILISATION DU NOUVEAU COMPOSANT DE MISE EN PAGE */}
+      <MapAndListLayout
+        mapComponent={<MapboxMap listings={listings} />}
+        listComponent={<ListingsList listings={listings} loading={loading} />}
+      />
+
+    </div>
+  )
+}
