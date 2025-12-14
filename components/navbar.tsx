@@ -10,7 +10,7 @@ import { Suspense } from 'react'
 export default function Navbar() {
   return (
     <nav className="bg-gradient-to-t from-gray-100 to-white">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 p-2">
 
         {/* Ligne 1 : Logo + Auth + Menu mobile */}
         <div className="h-16 flex items-center justify-between">
@@ -18,7 +18,7 @@ export default function Navbar() {
             <Logo />
             <span className="text-lg font-semibold text-gray-900">unbienimmo</span>
           </Link>
-
+<SearchBarClient />
           <div className="flex items-center gap-3">
             <Suspense>
             <AuthButton />
@@ -29,10 +29,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Ligne 2 : SearchBar */}
-        <div className="pb-4 flex justify-center">
-          <SearchBarClient />
-        </div>
+       
 
       </div>
     </nav>

@@ -5,6 +5,7 @@ import { supabasePublic } from "@/lib/supabase/supabase-public";
 import Link from "next/link";
 import { ListingCard } from "@/components/ListingCard";
 import { getFullPublicUrl } from "@/lib/supabase/storage";
+import { AuthButton } from "@/components/auth-button";
 
 // --- Interfaces ---
 
@@ -117,6 +118,7 @@ export default async function Home() {
               lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7
             "
           >
+            
             {listingsWithImages.map((listing) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}

@@ -1,29 +1,44 @@
+// components/AuthButton.tsx
 'use client'
 
 import * as React from 'react'
 import Link from 'next/link'
 import { Button } from './ui/button'
+import { User } from '@supabase/supabase-js' 
 
-import { supabasePublic } from '@/lib/supabase/supabase-public'
+// ➡️ Importer la fonction pour créer le client navigateur
+import { createClient } from '@/lib/supabase/client' // Assurez-vous du chemin correct
+
 import { LogoutButton } from './logout-button'
 
+// ➡️ Initialiser le client une seule fois en dehors du composant (ou utiliser useMemo si vous le préférez à l'intérieur)
+const supabaseClient = createClient();
+
+
 export function AuthButton() {
-  const [user, setUser] = React.useState<any>(null)
+  const [user, setUser] = React.useState<User | null>(null) 
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data } = await supabasePublic.auth.getUser()
-        setUser(data?.user || null)
-      } catch {
-        setUser(null)
-      } finally {
+    // 1. Abonnement aux changements d'état
+    const { data: authListener } = supabaseClient.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user || null)
         setLoading(false)
       }
+    )
+
+    // 2. Vérification initiale de la session
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user || null)
+      setLoading(false) 
+    })
+
+    // Nettoyage : Désarmer l'écouteur
+    return () => {
+      authListener.subscription.unsubscribe()
     }
-    fetchUser()
-  }, [])
+  }, []) 
 
   if (loading) return <div>Loading...</div>
 

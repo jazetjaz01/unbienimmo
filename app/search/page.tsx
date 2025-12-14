@@ -11,8 +11,7 @@ import { ListingsList } from '@/components/ListingsList'
 import { MapboxMap } from '@/components/MapboxMap' 
 import Link from 'next/link'
 
-// --- Interfaces (à conserver dans ce fichier) ---
-// ... (les mêmes interfaces ListingImage, ListingData, ListingForCard)
+// --- Interfaces (inchangées) ---
 
 interface ListingImage {
   image_url: string;
@@ -30,7 +29,7 @@ interface ListingData {
   created_at: string;
   exclusivite_agence: boolean;
   price: number;
-  latitude: number; // ⬅️ IMPORTANT : Assurez-vous que latitude et longitude sont incluses
+  latitude: number; 
   longitude: number;
   listing_images: ListingImage[]; 
 }
@@ -47,7 +46,6 @@ interface ListingForCard {
     exclusivite_agence: boolean;
     price: number;
     imageUrl: string;
-    // ⬅️ NOUVEAU : Ajout des coordonnées pour la carte
     latitude: number;
     longitude: number; 
 }
@@ -75,6 +73,7 @@ export default function SearchPage() {
   const city = extractCityName(cityParam);
 
   React.useEffect(() => {
+    // ... (Logique de fetch inchangée, elle est correcte)
     const fetchListings = async () => {
       setLoading(true)
 
@@ -137,12 +136,21 @@ export default function SearchPage() {
   }, [cityParam, propertyType, minPrice, maxPrice]) 
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">
-        Résultats de la recherche {cityParam ? `pour "${cityParam}"` : ''} ({loading ? '...' : listings.length})
-      </h1>
+    // ➡️ 1. On retire la classe 'container mx-auto' du conteneur principal
+    <div className="p-4"> 
+      
+      {/* ➡️ 2. On utilise un conteneur 'container mx-auto' séparé pour le titre
+             pour qu'il reste centré comme le reste du contenu de la page.
+      */}
+      <div className="container mx-auto">
+        <h1 className="text-2xl font-bold mb-6">
+          Résultats de la recherche {cityParam ? `pour "${cityParam}"` : ''} ({loading ? '...' : listings.length})
+        </h1>
+      </div>
 
-      {/* ⬅️ UTILISATION DU NOUVEAU COMPOSANT DE MISE EN PAGE */}
+      {/* 3. MapAndListLayout prend maintenant toute la largeur de l'écran 
+             (moins le padding de 4px de chaque côté du div parent).
+      */}
       <MapAndListLayout
         mapComponent={<MapboxMap listings={listings} />}
         listComponent={<ListingsList listings={listings} loading={loading} />}
