@@ -133,9 +133,9 @@ export function SearchContainer() {
 
   return (
     <div className="p-4"> 
-      <div className="container mx-auto">
-        <h1 className="text-2xl font-bold mb-6">
-          Résultats de la recherche {cityParam ? `pour "${cityParam}"` : ''} ({loading ? '...' : listings.length})
+      <div className=" mx-auto">
+        <h1 className="text-xs text-gray-400  mb-2">
+           {cityParam ? ` ${cityParam}` : ''} {loading ? '...' : listings.length} biens immobiliers
         </h1>
       </div>
 
