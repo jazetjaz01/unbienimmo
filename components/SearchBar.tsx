@@ -4,9 +4,7 @@ import * as React from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-// ... (Définitions de types et fonctions utilitaires inchangées)
 
-// Définitions de types (inchangées)
 export interface SearchParams {
   city: string
   propertyType: string
@@ -18,15 +16,14 @@ interface SearchBarProps {
   onSearch: (params: SearchParams) => void
 }
 
-// Type Mapbox Feature ajusté
 interface MapboxFeature {
   id: string
-  place_name: string 
-  text: string 
+  place_name: string
+  text: string
   context?: {
-    text: string 
-    id: string    
-    short_code?: string 
+    text: string
+    id: string
+    short_code?: string
   }[]
   properties: {
     postcode?: string
@@ -45,57 +42,49 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   const [minPrice, setMinPrice] = React.useState('')
   const [maxPrice, setMaxPrice] = React.useState('')
 
-  // ➡️ Fonctions utilitaires (inchangées)
   const extractCityName = (formattedCity: string): string => {
-    const separatorIndex = formattedCity.indexOf(' • ');
+    const separatorIndex = formattedCity.indexOf(' • ')
     if (separatorIndex !== -1) {
-      return formattedCity.substring(0, separatorIndex).trim();
+      return formattedCity.substring(0, separatorIndex).trim()
     }
-    return formattedCity.trim();
+    return formattedCity.trim()
   }
 
   const formatCityName = (place: MapboxFeature): string => {
-    // ... (Logique inchangée)
-    let detail = ''; 
-    const cityName = place.text;
+    let detail = ''
+    const cityName = place.text
 
-    // --- 1. Tentative d'extraction du Code Postal (CP) ---
     if (place.properties?.postcode) {
-      detail = place.properties.postcode;
-    } 
+      detail = place.properties.postcode
+    }
+
     if (!detail && place.context) {
-      const postcodeContext = place.context.find(c => c.id.startsWith('postcode.'));
+      const postcodeContext = place.context.find(c =>
+        c.id.startsWith('postcode.')
+      )
       if (postcodeContext) {
-        detail = postcodeContext.text;
+        detail = postcodeContext.text
       }
     }
 
-    // --- 2. Si CP non trouvé, extraction du Département (Nom) ---
     if (!detail && place.context) {
-        const departmentCodeItem = place.context.find(c => 
-            c.short_code && c.short_code.startsWith('FR-') && c.short_code.length <= 6
-        );
+      const departmentCodeItem = place.context.find(
+        c => c.short_code && c.short_code.startsWith('FR-') && c.short_code.length <= 6
+      )
 
-        if (departmentCodeItem) {
-            detail = departmentCodeItem.text;
-        }
+      if (departmentCodeItem) {
+        detail = departmentCodeItem.text
+      }
 
-        if (detail && detail.toLowerCase() === cityName.toLowerCase()) {
-            detail = '';
-        }
+      if (detail && detail.toLowerCase() === cityName.toLowerCase()) {
+        detail = ''
+      }
     }
 
-    // 3. Retourner le format (Ville • Détail) pour l'AFFICHAGE
-    if (detail) {
-        return `${cityName} • ${detail}`; 
-    }
-    
-    return cityName;
+    return detail ? `${cityName} • ${detail}` : cityName
   }
-  
-  // 🔹 Autocomplete Mapbox (inchangé)
+
   React.useEffect(() => {
-    // ... (Logique Autocomplete inchangée)
     const delayDebounceFn = setTimeout(() => {
       if (city.length < 2) {
         setSuggestions([])
@@ -108,13 +97,11 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         setLoadingCities(true)
         try {
           const res = await fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-              city
-            )}.json?` +
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(city)}.json?` +
               new URLSearchParams({
                 access_token: process.env.NEXT_PUBLIC_MAPBOX_TOKEN!,
                 country: 'fr',
-                types: 'place,postcode,locality,region', 
+                types: 'place,postcode,locality,region',
                 language: 'fr',
                 limit: '5',
               }),
@@ -134,30 +121,29 @@ export function SearchBar({ onSearch }: SearchBarProps) {
 
       fetchCities()
       return () => controller.abort()
-    }, 300) 
+    }, 300)
 
-    return () => clearTimeout(delayDebounceFn) 
+    return () => clearTimeout(delayDebounceFn)
   }, [city])
 
-  // ... (Fonctions handleSubmit et handleCitySelect inchangées)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const cityForSearch = extractCityName(city);
-    onSearch({ 
-        city: cityForSearch, 
-        propertyType, 
-        minPrice, 
-        maxPrice 
+    const cityForSearch = extractCityName(city)
+    onSearch({
+      city: cityForSearch,
+      propertyType,
+      minPrice,
+      maxPrice,
     })
   }
 
   const handleCitySelect = (place: MapboxFeature) => {
-    setCity(formatCityName(place)) 
+    setCity(formatCityName(place))
     setSuggestions([])
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
-      e.preventDefault(); 
+    e.preventDefault()
   }
 
   return (
@@ -172,8 +158,8 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         w-full max-w-2xl
       "
     >
-      {/* 🔍 Ville avec autocomplete (TOUJOURS AFFICHÉ) */}
-      <div className="relative flex-1">
+      {/* 🔍 Ville */}
+      <div className="relative flex-[2]">
         <Input
           value={city}
           onChange={(e) => setCity(e.target.value)}
@@ -182,7 +168,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         />
 
         {suggestions.length > 0 && (
-          <ul 
+          <ul
             onMouseDown={handleMouseDown}
             className="absolute z-50 top-12 left-0 right-0 bg-white border rounded-lg shadow-lg overflow-hidden"
           >
@@ -192,27 +178,28 @@ export function SearchBar({ onSearch }: SearchBarProps) {
                 onClick={() => handleCitySelect(item)}
                 className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm"
               >
-                {formatCityName(item)} 
+                {formatCityName(item)}
               </li>
             ))}
           </ul>
         )}
+
         {loadingCities && city.length >= 2 && (
-            <div className="absolute z-50 top-12 left-0 right-0 bg-white border rounded-lg shadow-lg px-4 py-2 text-sm text-gray-500">
-                Chargement...
-            </div>
+          <div className="absolute z-50 top-12 left-0 right-0 bg-white border rounded-lg shadow-lg px-4 py-2 text-sm text-gray-500">
+            Chargement...
+          </div>
         )}
       </div>
 
-      {/* Type - MASQUÉ SUR MOBILE (sm:hidden) et AFFICHÉ À PARTIR DE 'MD' */}
+      {/* 🏠 Type de bien */}
       <Input
         value={propertyType}
         onChange={(e) => setPropertyType(e.target.value)}
         placeholder="Type de bien"
-        className="border-none bg-transparent flex-1 hidden md:flex"
+        className="border-none bg-transparent w-28 hidden md:flex"
       />
 
-      {/* Budget Min - MASQUÉ SUR MOBILE (sm:hidden) et AFFICHÉ À PARTIR DE 'MD' */}
+      {/* 💰 Budget min */}
       <Input
         value={minPrice}
         onChange={(e) => setMinPrice(e.target.value)}
@@ -220,7 +207,8 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         type="number"
         className="border-none bg-transparent w-24 hidden md:flex"
       />
-      {/* Budget Max - MASQUÉ SUR MOBILE (sm:hidden) et AFFICHÉ À PARTIR DE 'MD' */}
+
+      {/* 💰 Budget max */}
       <Input
         value={maxPrice}
         onChange={(e) => setMaxPrice(e.target.value)}
@@ -229,7 +217,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         className="border-none bg-transparent w-24 hidden md:flex"
       />
 
-      {/* Bouton Search (TOUJOURS AFFICHÉ) */}
+      {/* 🔎 Search */}
       <Button
         type="submit"
         className="h-10 w-10 rounded-full bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-0 focus-visible:ring-0"

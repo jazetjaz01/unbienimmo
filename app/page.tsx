@@ -136,7 +136,7 @@ export default async function Home() {
       </div>
 
       <footer className="w-full border-t text-center text-xs py-8 mt-auto">
-        <p>© 2025 Listings App</p>
+        <p>© 2026 unbienimmo.com - annonces immobilières géolocalisées</p>
       </footer>
     </main>
   );

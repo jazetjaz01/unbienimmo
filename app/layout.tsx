@@ -9,7 +9,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "unbienimmo.com: nouveau site d'annonces immobilières géolocalisées",
+  title: "unbienimmo.com  site d'annonces immobilières géolocalisées",
   description: "Recherche géolocalisées par ville quartier et rue !",
 };
 
