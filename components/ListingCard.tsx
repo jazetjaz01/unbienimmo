@@ -54,7 +54,7 @@ export function ListingCard({ listing }: ListingCardProps) {
       <div className="relative w-full aspect-[4/3] overflow-hidden rounded-xl mb-2">
         {listing.exclusivite_agence && (
           <div className="absolute top-3 left-3 z-10">
-            <span className="bg-gray-100 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+            <span className="bg-gray-100 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full shadow-sm  hidden md:block">
               Exclusivité
             </span>
           </div>
