@@ -68,7 +68,7 @@ export default async function ListingPage({
 
   return (
     <main className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-16 xl:px-24 py-8">
+      <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 mt-4 mb-4">
 
         {/* TITRE */}
         <header className="mb-6">
