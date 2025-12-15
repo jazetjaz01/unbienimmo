@@ -132,7 +132,7 @@ export function SearchContainer() {
   }, [cityParam, propertyType, minPrice, maxPrice]) 
 
   return (
-    <div className="p-4"> 
+    <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 pt-4"> 
       <div className=" mx-auto">
         <h1 className="text-xs   mb-2">
            {cityParam ? ` ${cityParam}` : ''} {loading ? '...' : listings.length} biens immobiliers

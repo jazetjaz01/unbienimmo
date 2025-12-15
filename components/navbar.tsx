@@ -10,7 +10,8 @@ import { Suspense } from 'react'
 export default function Navbar() {
   return (
     <nav className="bg-gradient-to-t from-gray-100 to-white">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 p-2">
+     <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24">
+
 
         {/* Ligne 1 : Logo + Auth + Menu mobile */}
         <div className="h-16 flex items-center justify-between">

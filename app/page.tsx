@@ -108,8 +108,10 @@ export default async function Home() {
     }) || [];
 
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="w-full p-5 md:p-10">
+    <main className="min-h-screen ">
+  <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 mt-4 mb-4">
+
+       
         {listingsWithImages.length > 0 ? (
           <div
             className="

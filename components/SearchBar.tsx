@@ -154,7 +154,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         h-12 bg-white
         rounded-full border
         shadow-sm hover:shadow-md
-        px-4 gap-2
+        px-2 gap-2
         w-full max-w-2xl
       "
     >
