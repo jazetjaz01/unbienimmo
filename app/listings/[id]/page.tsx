@@ -1,133 +1,96 @@
-// ⚠️ Next 16 + Turbopack
-export const dynamic = 'force-dynamic'
+import { notFound } from "next/navigation";
+import { supabasePublic } from "@/lib/supabase/supabase-public";
+import { getFullPublicUrl } from "@/lib/supabase/storage";
+import Gallery6 from "@/components/Gallery6";
 
-import Image from 'next/image'
-import { notFound } from 'next/navigation'
-import { supabasePublic } from '@/lib/supabase/supabase-public'
-import { getFullPublicUrl } from '@/lib/supabase/storage'
+export const dynamic = "force-dynamic";
 
 interface ListingImage {
-  image_url: string
-  sort_order: number
+  image_url: string;
+  sort_order: number;
 }
 
 interface Listing {
-  id: number
-  title: string
-  description: string | null
-  property_type: string
-  room_count: number | null
-  surface_area_m2: number | null
-  zip_code: string
-  city: string
-  price: number
-  exclusivite_agence: boolean
-  created_at: string
-  listing_images: ListingImage[]
+  id: number;
+  title: string;
+  description: string | null;
+  property_type: string;
+  room_count: number | null;
+  surface_area_m2: number | null;
+  zip_code: string;
+  city: string;
+  price: number;
+  created_at: string;
+  listing_images: ListingImage[];
 }
 
 export default async function ListingPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  // ✅ OBLIGATOIRE en Next 15+
-  const { id } = await params
+  const { id } = await params; // ✅ OBLIGATOIRE Next 16
 
   const { data: listing } = await supabasePublic
-    .from('listings')
+    .from("listings")
     .select(`
-      id,
-      title,
-      description,
-      property_type,
-      room_count,
-      surface_area_m2,
-      zip_code,
-      city,
-      price,
-      exclusivite_agence,
-      created_at,
+      *,
       listing_images (image_url, sort_order)
     `)
-    .eq('id', id)
-    .single<Listing>()
+    .eq("id", id)
+    .single<Listing>();
 
-  if (!listing) notFound()
+  if (!listing) notFound();
 
   const images =
     listing.listing_images
       ?.sort((a, b) => a.sort_order - b.sort_order)
-      .map(img => getFullPublicUrl(img.image_url)) || []
+      .map((img) => getFullPublicUrl(img.image_url)) ?? [];
 
-  const formattedPrice = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 0,
-  }).format(listing.price)
+  const formattedPrice = new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(listing.price);
 
   return (
-    <main className="bg-white">
-      <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 mt-4 mb-4">
+   <main className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 mt-4 mb-4">
+      {/* Galerie */}
+      <Gallery6 images={images} />
 
-        {/* TITRE */}
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold">{listing.title}</h1>
-          <p className="text-gray-600 mt-1">
-            {listing.zip_code} {listing.city}
+      {/* Infos */}
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
+        {/* Colonne gauche */}
+        <div>
+          <h1 className="text-3xl font-semibold">{listing.title}</h1>
+          <p className="mt-2 text-gray-600">
+            {listing.city} ({listing.zip_code})
           </p>
-        </header>
 
-        {/* GALERIE */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-10 rounded-xl overflow-hidden">
-          {images.slice(0, 5).map((src, index) => (
-            <div
-              key={index}
-              className={`relative aspect-[4/3] ${
-                index === 0 ? 'md:row-span-2' : ''
-              }`}
-            >
-              <Image
-                src={src}
-                alt={listing.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority={index === 0}
-              />
-            </div>
-          ))}
-        </section>
-
-        {/* CONTENU */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* GAUCHE */}
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-semibold mb-4">
-              {listing.property_type}
-              {listing.room_count && ` • ${listing.room_count} pièces`}
-              {listing.surface_area_m2 && ` • ${listing.surface_area_m2} m²`}
-            </h2>
-
-            <div className="prose max-w-none text-gray-700">
-              {listing.description || 'Aucune description fournie.'}
-            </div>
+          <div className="mt-4 text-gray-700">
+            {listing.property_type}
+            {listing.room_count && ` • ${listing.room_count} pièces`}
+            {listing.surface_area_m2 && ` • ${listing.surface_area_m2} m²`}
           </div>
 
-          {/* DROITE */}
-          <aside className="lg:col-span-1">
-            <div className="sticky top-24 border rounded-xl p-6 shadow-sm">
-              <p className="text-2xl font-semibold text-teal-700">
-                {formattedPrice}
-              </p>
+          {listing.description && (
+            <p className="mt-6 leading-relaxed">
+              {listing.description}
+            </p>
+          )}
+        </div>
 
-              <button className="w-full mt-6 py-3 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-700 transition">
-                Contacter l’agence
-              </button>
-            </div>
-          </aside>
-        </section>
+        {/* Colonne droite (prix façon Airbnb) */}
+        <div className="sticky top-24 h-fit rounded-xl border p-6 shadow-sm">
+          <div className="text-2xl font-semibold">
+            {formattedPrice}
+          </div>
+
+          <button className="mt-6 w-full rounded-lg bg-teal-600 py-3 font-medium text-white hover:bg-teal-700 transition">
+            Contacter l’agence
+          </button>
+        </div>
       </div>
     </main>
-  )
+  );
 }
