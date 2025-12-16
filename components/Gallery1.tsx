@@ -1,47 +1,71 @@
-import { cn } from '@/lib/utils'
+"use client";
+
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import LightboxCarousel from "./LightboxCarousel";
 
 type GalleryImage = {
-  src: string
-  alt: string
-}
+  src: string;
+  alt: string;
+};
 
 type GallerySection = {
-  type?: string
-  images: GalleryImage[]
-}
+  type?: string;
+  images: GalleryImage[];
+};
 
 const Gallery = ({ sections }: { sections: GallerySection[] }) => {
+  const allImages = sections.flatMap((section) => section.images);
+
+  const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+
   return (
-    <section className='py-4 sm:py-16 lg:py-6 '>
-      <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24">
-        {/* Header 
-        <div className='mb-12 space-y-4 text-center sm:mb-16 lg:mb-24'>
-          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>
-            <span className='relative z-1'>
-              Explore our
-              <span className='bg-primary absolute bottom-1 left-0 -z-1 h-px w-full' aria-hidden='true'></span>
-            </span>{' '}
-            Gallery
-          </h2>
-          <p className='text-muted-foreground text-xl'>
-            Explore our gallery to learn more about our amazing products and their features.
-          </p>
-        </div>
-        */}
+    <>
+      <section className="py-4 sm:py-16 lg:py-6">
+        <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24">
+          <div className="grid gap-6 md:grid-cols-3">
+            {sections.map((section, sectionIndex) => (
+              <div
+                key={sectionIndex}
+                className={cn({
+                  "grid grid-cols-2 gap-6": section.type === "grid",
+                })}
+              >
+                {section.images.map((image, imageIndex) => {
+                  const globalIndex =
+                    sections
+                      .slice(0, sectionIndex)
+                      .flatMap((s) => s.images).length + imageIndex;
 
-        {/* Gallery Grid */}
-        <div className='grid gap-6 md:grid-cols-3'>
-          {sections.map((section, sectionIndex) => (
-            <div key={sectionIndex} className={cn({ 'grid grid-cols-2 gap-6': section.type === 'grid' })}>
-              {section.images.map((image, imageIndex) => (
-                <img key={imageIndex} src={image.src} alt={image.alt} className='rounded-lg object-cover' />
-              ))}
-            </div>
-          ))}
+                  return (
+                    <img
+                      key={imageIndex}
+                      src={image.src}
+                      alt={image.alt}
+                      className="rounded-lg object-cover cursor-pointer"
+                      onClick={() => {
+                        setIndex(globalIndex);
+                        setOpen(true);
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
-  )
-}
+      </section>
 
-export default Gallery
+      {open && (
+        <LightboxCarousel
+          images={allImages}
+          initialIndex={index}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
+  );
+};
+
+export default Gallery;

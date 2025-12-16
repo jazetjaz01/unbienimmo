@@ -44,30 +44,35 @@ export default async function ListingPage({
 
   if (!listing) notFound();
 
-  // 🔁 Transformation Supabase → Gallery1
+  // 🔁 Tri des images
   const sortedImages =
     listing.listing_images?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
 
+  // ✅ Limitation à 9 images max
+  const limitedImages = sortedImages.slice(0, 9);
+
+  // 🔁 Transformation Supabase → Gallery
   const sections = [
-    // Image principale
+    // Image principale (1)
     {
-      images: sortedImages.slice(0, 1).map((img) => ({
+      images: limitedImages.slice(0, 1).map((img) => ({
         src: getFullPublicUrl(img.image_url),
         alt: listing.title,
       })),
     },
+
     // Grilles suivantes par groupe de 4
-    ...Array.from({ length: Math.ceil((sortedImages.length - 1) / 4) }).map(
-      (_, i) => ({
-        type: "grid" as const,
-        images: sortedImages
-          .slice(1 + i * 4, 1 + (i + 1) * 4)
-          .map((img) => ({
-            src: getFullPublicUrl(img.image_url),
-            alt: listing.title,
-          })),
-      })
-    ),
+    ...Array.from({
+      length: Math.ceil((limitedImages.length - 1) / 4),
+    }).map((_, i) => ({
+      type: "grid" as const,
+      images: limitedImages
+        .slice(1 + i * 4, 1 + (i + 1) * 4)
+        .map((img) => ({
+          src: getFullPublicUrl(img.image_url),
+          alt: listing.title,
+        })),
+    })),
   ];
 
   const formattedPrice = new Intl.NumberFormat("fr-FR", {
@@ -77,16 +82,15 @@ export default async function ListingPage({
   }).format(listing.price);
 
   return (
-    <main className="py-6 ">
-      {/* ✅ Galerie IDENTIQUE à /test */}
+    <main className="py-6">
+      {/* Galerie */}
       <Gallery sections={sections} />
 
       {/* Infos */}
-          
       <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
-        {/* Gauche */}
+        {/* Colonne gauche */}
         <div>
-          <h1 className="text-3xl  font-semibold">{listing.title}</h1>
+          <h1 className="text-3xl font-semibold">{listing.title}</h1>
 
           <p className="mt-2 text-gray-600">
             {listing.city} ({listing.zip_code})
@@ -105,7 +109,7 @@ export default async function ListingPage({
           )}
         </div>
 
-        {/* Droite */}
+        {/* Colonne droite */}
         <aside className="sticky top-24 h-fit rounded-xl border bg-white p-6 shadow-sm">
           <div className="text-2xl font-semibold">{formattedPrice}</div>
 
