@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+
+import { Outfit, Sarina } from "next/font/google";
+
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import Navbar from "@/components/navbar";
@@ -19,6 +21,13 @@ const outfitSans = Outfit({
   subsets: ["latin"],
 });
 
+const sarina = Sarina({
+  variable: "--font-sarina",
+  weight: "400",
+  display: "swap",
+  subsets: ["latin"],
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,7 +35,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${outfitSans.className} antialiased`}>
+      <body
+  className={`
+    ${outfitSans.variable}
+    ${sarina.variable}
+    ${outfitSans.className}
+    antialiased
+  `}
+>
+
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

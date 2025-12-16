@@ -17,7 +17,7 @@ export default function Navbar() {
         <div className="h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
-            <span className="text-lg font-semibold hidden md:block">unbienimmo</span>
+            <span className="font-sarina text-lg  hidden md:block">unbienimmo</span>
           </Link>
 <SearchBarClient />
           <div className="flex items-center gap-3">
