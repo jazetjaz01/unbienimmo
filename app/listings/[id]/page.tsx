@@ -13,6 +13,7 @@ interface ListingImage {
 interface Listing {
   id: number;
   title: string;
+  transaction_type: string;
   description: string | null;
   property_type: string;
   room_count: number | null;
@@ -21,8 +22,21 @@ interface Listing {
   city: string;
   price: number;
   created_at: string;
+  updated_at: string;
   listing_images: ListingImage[];
 }
+
+/* -------------------------------
+   Format date FR : le 10 déc. 2025
+-------------------------------- */
+const formatDateFR = (date: string) => {
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "Europe/Paris",
+  }).format(new Date(date));
+};
 
 export default async function ListingPage({
   params,
@@ -44,24 +58,21 @@ export default async function ListingPage({
 
   if (!listing) notFound();
 
-  // 🔁 Tri des images
+  /* -------------------------------
+     Images
+  -------------------------------- */
   const sortedImages =
     listing.listing_images?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
 
-  // ✅ Limitation à 9 images max
   const limitedImages = sortedImages.slice(0, 9);
 
-  // 🔁 Transformation Supabase → Gallery
   const sections = [
-    // Image principale (1)
     {
       images: limitedImages.slice(0, 1).map((img) => ({
         src: getFullPublicUrl(img.image_url),
         alt: listing.title,
       })),
     },
-
-    // Grilles suivantes par groupe de 4
     ...Array.from({
       length: Math.ceil((limitedImages.length - 1) / 4),
     }).map((_, i) => ({
@@ -90,17 +101,25 @@ export default async function ListingPage({
       <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
         {/* Colonne gauche */}
         <div>
-          <h1 className="text-3xl font-semibold">{listing.title}</h1>
+          <h1 className="text-2xl">
+            {listing.transaction_type} {listing.property_type}{" "}
+            {listing.room_count && `${listing.room_count} pièces`}{" "}
+            {listing.surface_area_m2 && `${listing.surface_area_m2} m²`}
+          </h1>
 
-          <p className="mt-2 text-gray-600">
-            {listing.city} ({listing.zip_code})
+          <p className="text-2xl">
+            {listing.zip_code} {listing.city}
           </p>
 
-          <div className="mt-4 text-gray-700">
-            {listing.property_type}
-            {listing.room_count && ` • ${listing.room_count} pièces`}
-            {listing.surface_area_m2 && ` • ${listing.surface_area_m2} m²`}
-          </div>
+          <p className="text-3xl font-bold text-teal-500">
+            {formattedPrice}
+          </p>
+
+          <p className="mt-3 text-base text-gray-500">
+            Référence annonce {listing.id} · Mise en ligne le{" "}
+            {formatDateFR(listing.created_at)} · Modifié le{" "}
+            {formatDateFR(listing.updated_at)}
+          </p>
 
           {listing.description && (
             <p className="mt-6 leading-relaxed text-gray-800">
