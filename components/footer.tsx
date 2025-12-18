@@ -196,10 +196,10 @@ const Footer = () => {
             {/* Copyright */}
             <span className="text-muted-foreground">
               &copy; {new Date().getFullYear()}{" "}
-              <Link href="/" target="_blank">
-                unbienimmo.com
+              <Link href="https://solutionspro.unbienimmo.com" target="_blank">
+                Solutionspro.unbienimmo.com
               </Link>
-              . Site d'annonces immobilières.
+              . Découvrez nos offres à destination des professionnels de l'immobilier
             </span>
 
             <div className="flex items-center gap-5 text-muted-foreground">
