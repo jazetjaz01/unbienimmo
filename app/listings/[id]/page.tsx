@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { supabasePublic } from "@/lib/supabase/supabase-public";
 import { getFullPublicUrl } from "@/lib/supabase/storage";
 import Gallery from "@/components/Gallery1";
-
+import CallbackForm from "@/components/CallbackForm";
 export const dynamic = "force-dynamic";
 
 interface ListingImage {
@@ -101,21 +101,21 @@ export default async function ListingPage({
       <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
         {/* Colonne gauche */}
         <div>
-          <h1 className="text-2xl">
+          <h1 className="text-xl font-semibold ">
             {listing.transaction_type} {listing.property_type}{" "}
             {listing.room_count && `${listing.room_count} pièces`}{" "}
             {listing.surface_area_m2 && `${listing.surface_area_m2} m²`}
           </h1>
 
-          <p className="text-2xl">
+          <p className="text-xl font-semibold ">
             {listing.zip_code} {listing.city}
           </p>
 
-          <p className="text-3xl font-bold text-teal-500">
+          <p className="text-2xl font-bold  text-teal-500">
             {formattedPrice}
           </p>
 
-          <p className="mt-3 text-base text-gray-500">
+          <p className="mt-3 text-base ">
             Référence annonce {listing.id} · Mise en ligne le{" "}
             {formatDateFR(listing.created_at)} · Modifié le{" "}
             {formatDateFR(listing.updated_at)}
@@ -129,12 +129,8 @@ export default async function ListingPage({
         </div>
 
         {/* Colonne droite */}
-        <aside className="sticky top-24 h-fit rounded-xl border bg-white p-6 shadow-sm">
-          <div className="text-2xl font-semibold">{formattedPrice}</div>
-
-          <button className="mt-6 w-full rounded-lg bg-teal-600 py-3 font-medium text-white hover:bg-teal-700 transition">
-            Contacter l’agence
-          </button>
+        <aside className="sticky top-24 h-fit rounded-xl  bg-slate-50 p-6 shadow-sm">
+          <CallbackForm listingId={listing.id} listingTitle={listing.title} />
         </aside>
       </div>
     </main>
