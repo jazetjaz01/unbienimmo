@@ -92,7 +92,7 @@ export default function CallbackForm({ listingId, listingTitle }: CallbackFormPr
         type="submit"
         className="flex w-full items-center justify-center rounded-lg bg-teal-600 py-3 font-semibold text-white transition hover:bg-teal-700 disabled:opacity-50"
       >
-        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Je soihaite être rapelé concernant ce bien"}
+        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Je souhaite être rappelé concernant ce bien"}
       </button>
 
       <p className="text-[10px] text-center text-gray-400">
