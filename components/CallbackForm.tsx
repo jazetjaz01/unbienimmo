@@ -149,7 +149,7 @@ ${userMessage || '—'}
       <button
         disabled={loading}
         type="submit"
-        className="flex w-full items-center justify-center rounded-lg bg-teal-600 py-3 font-semibold text-white transition hover:bg-teal-700 disabled:opacity-50"
+        className="flex w-full items-center justify-center rounded-lg border bg-white  py-3 font-semibold  transition hover:border-teal-700 disabled:opacity-50"
       >
         {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Validez'}
       </button>
