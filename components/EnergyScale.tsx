@@ -42,7 +42,7 @@ export default function EnergyScale({
     <div className="space-y-2">
       {/* Titre */}
       <div>
-        <h4 className="font-semibold text-sm ">{title}</h4>
+        <h4 className="font-semibold text-sm">{title}</h4>
         {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
       </div>
 
@@ -52,7 +52,7 @@ export default function EnergyScale({
         {numberValue != null && metric && (
           <div
             className={clsx(
-              "flex items-center gap-1 px-3 h-12 rounded-lg border-2 bg-white font-bold text-black w-fit",
+              "flex items-center gap-1 px-3 h-12 rounded-lg border-2 bg-white font-bold text-black  sm:w-fit w-2/3",
               borderColorMap[value]
             )}
           >
@@ -62,13 +62,12 @@ export default function EnergyScale({
         )}
 
         {/* Bande DPE */}
-        <div className="relative flex-1 h-12 mt-2 sm:mt-0  rounded-lg overflow-hidden">
-          {/* Bande colorée (75%) avec padding gauche */}
+        <div className="relative flex-1 mt-2 sm:mt-0 rounded-lg" style={{ minHeight: "3rem" }}>
+          {/* Bande colorée */}
           <div
             className={clsx(
-              "h-full pl-12 transition-all duration-500",
-              bgColorMap[value],
-              "w-1/2 rounded-lg"
+              "absolute left-0 top-0 h-full  pl-12 rounded-lg transition-all duration-500 w-2/3",
+              bgColorMap[value]
             )}
           />
 
