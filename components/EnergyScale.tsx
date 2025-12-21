@@ -62,12 +62,11 @@ export default function EnergyScale({
 
           {/* Barre DPE */}
           <div className="relative flex-1 max-w-[50%] bg-gray-200 rounded-lg h-12">
-            {/* Barre colorée */}
+            {/* Barre colorée : w-full sur petit écran, w-3/4 sur sm+ */}
             <div
               className={clsx(
-                "h-12 rounded-lg transition-all duration-500",
-                bgColorMap[value], // couleur correcte pour le fond
-                "w-full"
+                "h-12 rounded-lg transition-all duration-500 w-full sm:w-3/4",
+                bgColorMap[value] // couleur correcte pour le fond
               )}
             ></div>
 
