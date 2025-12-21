@@ -10,16 +10,11 @@ import ProfessionalCard from "@/components/ProfessionalCard";
 import { getEnergyClass, getGhgClass } from "@/lib/dpe/energy-class";
 import EnergyPerformance from "@/components/EnergyPerformance";
 
-
-
-
-
 export const dynamic = "force-dynamic";
 
 /* --------------------------------
    Interfaces
 --------------------------------- */
-
 interface ListingImage {
   image_url: string;
   sort_order: number;
@@ -53,19 +48,20 @@ interface Listing {
   price: number;
   created_at: string;
   updated_at: string;
-
-  // 🔥 DPE : valeurs numériques
-  energy_consumption: number | null; // kWh/m²/an
-  ghg_emissions: number | null;      // kgCO₂/m²/an
-
   listing_images: ListingImage[];
   professional: Professional | null;
+
+  // Nouvelles données DPE
+  energy_consumption?: number | null; // kWh/m².an
+  ghg_emissions?: number | null;      // kgCO2/m².an
+  annual_energy_cost_min?: number | null;
+  annual_energy_cost_max?: number | null;
+  diagnostic_date?: string | null;
 }
 
 /* -------------------------------
    Utils
 -------------------------------- */
-
 const formatDateFR = (date: string) =>
   new Intl.DateTimeFormat("fr-FR", {
     day: "2-digit",
@@ -77,7 +73,6 @@ const formatDateFR = (date: string) =>
 /* --------------------------------
    Page
 --------------------------------- */
-
 export default async function ListingPage({
   params,
 }: {
@@ -88,7 +83,6 @@ export default async function ListingPage({
   /* -------------------------------
      Requête Supabase
   -------------------------------- */
-
   const { data: listing } = await supabasePublic
     .from("listings")
     .select(`
@@ -115,7 +109,6 @@ export default async function ListingPage({
   /* -------------------------------
      Images
   -------------------------------- */
-
   const sortedImages: ListingImage[] =
     listing.listing_images?.slice().sort(
       (a, b) => a.sort_order - b.sort_order
@@ -146,7 +139,6 @@ export default async function ListingPage({
   /* -------------------------------
      Prix formaté
   -------------------------------- */
-
   const formattedPrice = new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
@@ -156,7 +148,6 @@ export default async function ListingPage({
   /* --------------------------------
      Render
   --------------------------------- */
-
   return (
     <main className="py-6">
       {/* Galerie */}
@@ -199,15 +190,15 @@ export default async function ListingPage({
           )}
 
           {/* 🔋 DPE - Consommation et GES */}
-         
-
-<EnergyPerformance
-  energyClass={getEnergyClass(listing.energy_consumption)}
-  ghgClass={getGhgClass(listing.ghg_emissions)}
-  energyValue={listing.energy_consumption}
-  ghgValue={listing.ghg_emissions}
-/>
-
+          <EnergyPerformance
+            energyClass={getEnergyClass(listing.energy_consumption ?? null)}
+            ghgClass={getGhgClass(listing.ghg_emissions ?? null)}
+            energyValue={listing.energy_consumption ?? null}
+            ghgValue={listing.ghg_emissions ?? null}
+            annualCostMin={listing.annual_energy_cost_min ?? null}
+            annualCostMax={listing.annual_energy_cost_max ?? null}
+            diagnosticDate={listing.diagnostic_date ?? null}
+          />
         </div>
 
         {/* RIGHT */}

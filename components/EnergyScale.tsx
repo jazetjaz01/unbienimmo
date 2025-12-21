@@ -7,6 +7,9 @@ interface EnergyScaleProps {
   subtitle?: string;
   metric?: string;
   numberValue?: number | null;
+  annualCostMin?: number | null;
+  annualCostMax?: number | null;
+  diagnosticDate?: string | null;
 }
 
 export default function EnergyScale({
@@ -15,10 +18,12 @@ export default function EnergyScale({
   subtitle,
   metric,
   numberValue,
+  annualCostMin,
+  annualCostMax,
+  diagnosticDate,
 }: EnergyScaleProps) {
   if (!value) return null;
 
-  // Couleurs Tailwind
   const borderColorMap: Record<EnergyClass, string> = {
     A: "border-emerald-600",
     B: "border-lime-500",
@@ -39,38 +44,45 @@ export default function EnergyScale({
     G: "bg-red-700",
   };
 
+  // Formatage date
+  const formatDateFR = (date: string) =>
+    new Intl.DateTimeFormat("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      timeZone: "Europe/Paris",
+    }).format(new Date(date));
+
   return (
     <div className="space-y-2">
+      {/* Titre et sous-titre */}
       <div>
         <h4 className="font-semibold text-sm uppercase">{title}</h4>
         {subtitle && <p className="text-xs">{subtitle}</p>}
       </div>
 
-      {numberValue !== null && numberValue !== undefined && metric && (
+      {/* Valeur chiffrée + barre DPE */}
+      {numberValue != null && metric && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mt-1">
-          
-          {/* Valeur chiffrée avec bordure colorée */}
           <div
             className={clsx(
               "flex items-center gap-1 mb-2 sm:mb-0 mr-2 px-3 h-12 rounded-lg border-2 bg-white font-bold text-black",
-              borderColorMap[value] // couleur de la bordure identique à la barre
+              borderColorMap[value]
             )}
           >
             <span className="text-lg">{numberValue}</span>
             <span className="text-sm">{metric}</span>
           </div>
 
-          {/* Barre DPE */}
-          <div className="relative flex-1 max-w-[50%] bg-gray-200 rounded-lg h-12">
-            {/* Barre colorée : w-full sur petit écran, w-3/4 sur sm+ */}
+          <div className="relative flex-1 max-w-[75%] bg-gray-200 rounded-lg h-12">
             <div
               className={clsx(
-                "h-12 rounded-lg transition-all duration-500 w-full sm:w-3/4",
-                bgColorMap[value] // couleur correcte pour le fond
+                "h-12 rounded-lg transition-all duration-500",
+                bgColorMap[value],
+                "w-full"
               )}
             ></div>
 
-            {/* Badge lettre active */}
             <span
               className={clsx(
                 "absolute right-0 top-0 h-12 flex items-center justify-center px-4 rounded-lg font-bold text-2xl",
@@ -81,6 +93,27 @@ export default function EnergyScale({
               {value}
             </span>
           </div>
+        </div>
+      )}
+
+      {/* Montants annuels et date du diagnostic */}
+      {(annualCostMin != null || annualCostMax != null || diagnosticDate) && (
+        <div className="mt-2 text-sm space-y-1">
+          {(annualCostMin != null || annualCostMax != null) && (
+            <p>
+              Montant estimé des dépenses annuelles d’énergie pour un usage
+              standard :{" "}
+              {annualCostMin != null && <>entre {annualCostMin.toLocaleString("fr-FR")} €</>}
+              {annualCostMin != null && annualCostMax != null && <> et </>}
+              {annualCostMax != null && <>{annualCostMax.toLocaleString("fr-FR")} €</>} par an
+            </p>
+          )}
+
+          {diagnosticDate ? (
+            <p>Diagnostic réalisé le {formatDateFR(diagnosticDate)}</p>
+          ) : (
+            <p className="text-muted-foreground">Date du diagnostic non disponible</p>
+          )}
         </div>
       )}
     </div>
