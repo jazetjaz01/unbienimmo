@@ -1,12 +1,18 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { supabasePublic } from "@/lib/supabase/supabase-public";
 import { getFullPublicUrl } from "@/lib/supabase/storage";
+
 import Gallery from "@/components/Gallery1";
 import CallbackForm from "@/components/CallbackForm";
 import ListingFeatures from "@/components/ListingFeatures";
 import ProfessionalCard from "@/components/ProfessionalCard";
-import { Separator } from "@/components/ui/separator";
+
+import { getEnergyClass, getGhgClass } from "@/lib/dpe/energy-class";
+import EnergyPerformance from "@/components/EnergyPerformance";
+
+
+
+
 
 export const dynamic = "force-dynamic";
 
@@ -47,25 +53,31 @@ interface Listing {
   price: number;
   created_at: string;
   updated_at: string;
+
+  // 🔥 DPE : valeurs numériques
+  energy_consumption: number | null; // kWh/m²/an
+  ghg_emissions: number | null;      // kgCO₂/m²/an
+
   listing_images: ListingImage[];
   professional: Professional | null;
 }
 
 /* -------------------------------
-   Format date FR
+   Utils
 -------------------------------- */
-const formatDateFR = (date: string) => {
-  return new Intl.DateTimeFormat("fr-FR", {
+
+const formatDateFR = (date: string) =>
+  new Intl.DateTimeFormat("fr-FR", {
     day: "2-digit",
     month: "short",
     year: "numeric",
     timeZone: "Europe/Paris",
   }).format(new Date(date));
-};
 
 /* --------------------------------
    Page
 --------------------------------- */
+
 export default async function ListingPage({
   params,
 }: {
@@ -76,6 +88,7 @@ export default async function ListingPage({
   /* -------------------------------
      Requête Supabase
   -------------------------------- */
+
   const { data: listing } = await supabasePublic
     .from("listings")
     .select(`
@@ -100,8 +113,9 @@ export default async function ListingPage({
   if (!listing) notFound();
 
   /* -------------------------------
-     Images (solution propre)
+     Images
   -------------------------------- */
+
   const sortedImages: ListingImage[] =
     listing.listing_images?.slice().sort(
       (a, b) => a.sort_order - b.sort_order
@@ -132,6 +146,7 @@ export default async function ListingPage({
   /* -------------------------------
      Prix formaté
   -------------------------------- */
+
   const formattedPrice = new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
@@ -141,16 +156,16 @@ export default async function ListingPage({
   /* --------------------------------
      Render
   --------------------------------- */
+
   return (
     <main className="py-6">
       {/* Galerie */}
       <Gallery sections={sections} />
 
-      {/* Contenu */}
       <div className="mx-auto px-4 sm:px-8 lg:px-16 xl:px-24
                       grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
 
-        {/* Colonne gauche */}
+        {/* LEFT */}
         <div>
           <h1 className="text-xl font-semibold">
             {listing.transaction_type} {listing.property_type}{" "}
@@ -180,13 +195,22 @@ export default async function ListingPage({
           />
 
           {listing.description && (
-            <p className="mt-6 leading-relaxed">
-              {listing.description}
-            </p>
+            <p className="mt-6 leading-relaxed">{listing.description}</p>
           )}
+
+          {/* 🔋 DPE - Consommation et GES */}
+         
+
+<EnergyPerformance
+  energyClass={getEnergyClass(listing.energy_consumption)}
+  ghgClass={getGhgClass(listing.ghg_emissions)}
+  energyValue={listing.energy_consumption}
+  ghgValue={listing.ghg_emissions}
+/>
+
         </div>
 
-        {/* Colonne droite */}
+        {/* RIGHT */}
         <aside className="sticky top-24 h-fit space-y-6">
           <div className="rounded-xl bg-slate-50 p-6 shadow-sm">
             <CallbackForm

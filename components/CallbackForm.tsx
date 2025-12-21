@@ -154,8 +154,9 @@ ${userMessage || '—'}
         {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Validez'}
       </button>
 
-      <p className="text-[10px] text-center text-gray-400">
-        En validant, vous acceptez que vos données soient transmises à l'agence pour traiter votre demande.
+      <p className="text-xs text-center text-gray-400">
+        En cliquant sur le bouton ci-dessus, je reconnais avoir pris connaissance et accepter sans réserves les Mentions légales et Conditions Générales d’Utilisation du site.
+        Vous acceptez que vos données soient transmises à l'agence pour traiter votre demande.
       </p>
     </form>
   )
