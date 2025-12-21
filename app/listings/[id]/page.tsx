@@ -6,7 +6,8 @@ import Gallery from "@/components/Gallery1";
 import CallbackForm from "@/components/CallbackForm";
 import ListingFeatures from "@/components/ListingFeatures";
 import ProfessionalCard from "@/components/ProfessionalCard";
-     import { Separator } from "@/components/ui/separator"; // chemin selon ton projet
+import { Separator } from "@/components/ui/separator";
+
 export const dynamic = "force-dynamic";
 
 /* --------------------------------
@@ -94,15 +95,18 @@ export default async function ListingPage({
       )
     `)
     .eq("id", id)
-    .maybeSingle();
+    .maybeSingle<Listing>();
 
   if (!listing) notFound();
 
   /* -------------------------------
-     Images
+     Images (solution propre)
   -------------------------------- */
-  const sortedImages =
-    listing.listing_images?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
+  const sortedImages: ListingImage[] =
+    listing.listing_images?.slice().sort(
+      (a, b) => a.sort_order - b.sort_order
+    ) ?? [];
+
   const limitedImages = sortedImages.slice(0, 9);
 
   const sections = [
@@ -112,14 +116,17 @@ export default async function ListingPage({
         alt: listing.title,
       })),
     },
-    ...Array.from({ length: Math.ceil((limitedImages.length - 1) / 4) }).map(
-      (_, i) => ({
-        type: "grid" as const,
-        images: limitedImages
-          .slice(1 + i * 4, 1 + (i + 1) * 4)
-          .map((img) => ({ src: getFullPublicUrl(img.image_url), alt: listing.title })),
-      })
-    ),
+    ...Array.from({
+      length: Math.ceil((limitedImages.length - 1) / 4),
+    }).map((_, i) => ({
+      type: "grid" as const,
+      images: limitedImages
+        .slice(1 + i * 4, 1 + (i + 1) * 4)
+        .map((img) => ({
+          src: getFullPublicUrl(img.image_url),
+          alt: listing.title,
+        })),
+    })),
   ];
 
   /* -------------------------------
@@ -159,16 +166,11 @@ export default async function ListingPage({
             {formattedPrice}
           </p>
 
-     
-
-<p className="mt-3 text-sm flex items-center gap-2">
-  <span>Référence annonce {listing.id}</span>
-  /
-  <span>Mise en ligne le {formatDateFR(listing.created_at)}</span>
-  /
-  <span>Modifiée le {formatDateFR(listing.updated_at)}</span>
-</p>
-
+          <p className="mt-3 text-sm flex items-center gap-2">
+            <span>Référence annonce {listing.id}</span> /
+            <span>Mise en ligne le {formatDateFR(listing.created_at)}</span> /
+            <span>Modifiée le {formatDateFR(listing.updated_at)}</span>
+          </p>
 
           <ListingFeatures
             surfaceArea={listing.surface_area_m2}
@@ -184,9 +186,8 @@ export default async function ListingPage({
           )}
         </div>
 
-        {/* Colonne droite unique */}
+        {/* Colonne droite */}
         <aside className="sticky top-24 h-fit space-y-6">
-          {/* Callback Form avec message prérempli */}
           <div className="rounded-xl bg-slate-50 p-6 shadow-sm">
             <CallbackForm
               listingId={listing.id}
@@ -197,7 +198,6 @@ export default async function ListingPage({
             />
           </div>
 
-          {/* Professional Card */}
           <div className="rounded-xl bg-slate-50 p-6 shadow-sm">
             <ProfessionalCard professional={listing.professional} />
           </div>

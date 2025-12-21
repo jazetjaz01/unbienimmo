@@ -80,7 +80,7 @@ ${userMessage || '—'}
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="text-xl font-semibold mb-4">
-        Je souhaite être recontacté par l'agence
+        Je souhaite être recontacté 
       </div>
 
       {/* Prénom / Nom */}
