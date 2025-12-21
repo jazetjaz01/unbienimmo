@@ -7,9 +7,6 @@ interface EnergyScaleProps {
   subtitle?: string;
   metric?: string;
   numberValue?: number | null;
-  annualCostMin?: number | null;
-  annualCostMax?: number | null;
-  diagnosticDate?: string | null;
 }
 
 export default function EnergyScale({
@@ -18,9 +15,6 @@ export default function EnergyScale({
   subtitle,
   metric,
   numberValue,
-  annualCostMin,
-  annualCostMax,
-  diagnosticDate,
 }: EnergyScaleProps) {
   if (!value) return null;
 
@@ -44,78 +38,51 @@ export default function EnergyScale({
     G: "bg-red-700",
   };
 
-  // Formatage date
-  const formatDateFR = (date: string) =>
-    new Intl.DateTimeFormat("fr-FR", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      timeZone: "Europe/Paris",
-    }).format(new Date(date));
-
   return (
     <div className="space-y-2">
-      {/* Titre et sous-titre */}
+      {/* Titre */}
       <div>
-        <h4 className="font-semibold text-sm uppercase">{title}</h4>
-        {subtitle && <p className="text-xs">{subtitle}</p>}
+        <h4 className="font-semibold text-sm ">{title}</h4>
+        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
       </div>
 
-      {/* Valeur chiffrée + barre DPE */}
-      {numberValue != null && metric && (
-        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mt-1">
+      {/* Ligne valeur + bande */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mt-1">
+        {/* Valeur chiffrée */}
+        {numberValue != null && metric && (
           <div
             className={clsx(
-              "flex items-center gap-1 mb-2 sm:mb-0 mr-2 px-3 h-12 rounded-lg border-2 bg-white font-bold text-black",
+              "flex items-center gap-1 px-3 h-12 rounded-lg border-2 bg-white font-bold text-black w-fit",
               borderColorMap[value]
             )}
           >
             <span className="text-lg">{numberValue}</span>
             <span className="text-sm">{metric}</span>
           </div>
+        )}
 
-          <div className="relative flex-1 max-w-[75%] bg-gray-200 rounded-lg h-12">
-            <div
-              className={clsx(
-                "h-12 rounded-lg transition-all duration-500",
-                bgColorMap[value],
-                "w-full"
-              )}
-            ></div>
+        {/* Bande DPE */}
+        <div className="relative flex-1 h-12 mt-2 sm:mt-0  rounded-lg overflow-hidden">
+          {/* Bande colorée (75%) avec padding gauche */}
+          <div
+            className={clsx(
+              "h-full pl-12 transition-all duration-500",
+              bgColorMap[value],
+              "w-1/2 rounded-lg"
+            )}
+          />
 
-            <span
-              className={clsx(
-                "absolute right-0 top-0 h-12 flex items-center justify-center px-4 rounded-lg font-bold text-2xl",
-                bgColorMap[value],
-                "text-white"
-              )}
-            >
-              {value}
-            </span>
-          </div>
+          {/* Lettre intégrée */}
+          <span
+            className={clsx(
+              "absolute left-2 top-0 h-full w-10 flex items-center justify-center font-bold text-2xl text-white",
+              bgColorMap[value]
+            )}
+          >
+            {value}
+          </span>
         </div>
-      )}
-
-      {/* Montants annuels et date du diagnostic */}
-      {(annualCostMin != null || annualCostMax != null || diagnosticDate) && (
-        <div className="mt-2 text-sm space-y-1">
-          {(annualCostMin != null || annualCostMax != null) && (
-            <p>
-              Montant estimé des dépenses annuelles d’énergie pour un usage
-              standard :{" "}
-              {annualCostMin != null && <>entre {annualCostMin.toLocaleString("fr-FR")} €</>}
-              {annualCostMin != null && annualCostMax != null && <> et </>}
-              {annualCostMax != null && <>{annualCostMax.toLocaleString("fr-FR")} €</>} par an
-            </p>
-          )}
-
-          {diagnosticDate ? (
-            <p>Diagnostic réalisé le {formatDateFR(diagnosticDate)}</p>
-          ) : (
-            <p className="text-muted-foreground">Date du diagnostic non disponible</p>
-          )}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
