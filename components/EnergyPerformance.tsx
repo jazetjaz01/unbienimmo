@@ -17,12 +17,11 @@ export default function EnergyPerformance({
   if (!energyClass && !ghgClass) return null;
 
   return (
-    <section className="mt-10 space-y-6">
+    <section className="mt-10 p-6 border rounded-xl shadow-sm bg-white space-y-6">
       <h3 className="text-lg font-semibold">
         Diagnostic de performance énergétique
       </h3>
 
-      {/* Alignement horizontal */}
       <div className="grid grid-cols-2 gap-6">
         <EnergyScale
           title="Performance énergétique"
@@ -34,7 +33,7 @@ export default function EnergyPerformance({
 
         <EnergyScale
           title="Performance climatique"
-          subtitle="Émissions de gaz à effet de serre"
+          subtitle="(dont emissions de gaz à effet de serre)"
           value={ghgClass}
           numberValue={ghgValue}
           metric="kgCO₂/m².an"
