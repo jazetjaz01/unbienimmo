@@ -13,7 +13,7 @@ interface ListingCardProps {
     exclusivite_agence: boolean
     created_at: string
     price: number
-    imageUrl?: string // ⚠ rendre optionnel
+    imageUrl?: string 
   }
 }
 
@@ -24,18 +24,6 @@ export function ListingCard({ listing }: ListingCardProps) {
     minimumFractionDigits: 0,
   }).format(listing.price)
 
-  const roomLabel =
-    typeof listing.room_count === 'number'
-      ? listing.room_count === 1
-        ? '1 pièce'
-        : `${listing.room_count} pièces`
-      : null
-
-  const surfaceLabel =
-    typeof listing.surface_area_m2 === 'number'
-      ? `${listing.surface_area_m2} m²`
-      : null
-
   const isNew = (() => {
     const created = new Date(listing.created_at).getTime()
     const now = Date.now()
@@ -43,55 +31,79 @@ export function ListingCard({ listing }: ListingCardProps) {
     return days <= 7
   })()
 
-  // ✅ si imageUrl vide, utiliser un placeholder
   const imageSrc = listing.imageUrl && listing.imageUrl.trim() !== ''
     ? listing.imageUrl
     : '/placeholder-image.jpg'
 
   return (
-    <Link href={`/listings/${listing.id}`} className="group block cursor-pointer">
-      {/* IMAGE */}
-      <div className="relative w-full aspect-[4/3] overflow-hidden rounded-xl mb-2">
-        {listing.exclusivite_agence && (
-          <div className="absolute top-3 left-3 z-10">
-            <span className="bg-gray-100 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full shadow-sm  hidden md:block">
-              Exclusivité
-            </span>
+    <Link href={`/listings/${listing.id}`} className="group block cursor-pointer bg-white">
+      {/* CONTENEUR IMAGE - Suppression des arrondis pour le style Flat */}
+      <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-100">
+        
+        {/* LABELS MINIMALISTES */}
+        <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start z-10">
+          <div className="flex flex-col gap-2">
+            {listing.exclusivite_agence && (
+              <span className="bg-white/90 backdrop-blur-sm text-gray-900 text-[9px] font-bold uppercase tracking-[0.2em] px-2 py-1 border border-gray-100">
+                Exclusivité
+              </span>
+            )}
+            {isNew && (
+              <span className="bg-gray-900 text-white text-[9px] font-bold uppercase tracking-[0.2em] px-2 py-1">
+                Nouveau
+              </span>
+            )}
           </div>
-        )}
-        {isNew && (
-          <div className="absolute top-3 right-3 z-10">
-            <span className="bg-teal-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-              Nouveau
-            </span>
-          </div>
-        )}
+        </div>
 
         <Image
           src={imageSrc}
           alt={listing.title || 'Annonce'}
           fill
-          className="transition-transform duration-300 group-hover:scale-105 object-cover"
-          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+          className="transition-transform duration-700 ease-out group-hover:scale-110 object-cover grayscale-[0.1] group-hover:grayscale-0"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
+        
+        {/* OVERLAY AU SURVOL */}
+        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
 
-      {/* DÉTAILS */}
-      <div className="p-1 text-sm">
-        <h3 className="text-gray-600 truncate">
-          {listing.property_type}
-          {roomLabel && ` • ${roomLabel}`}
-          {surfaceLabel && ` • ${surfaceLabel}`}
-        </h3>
-
-        <div className="flex gap-2 text-gray-700 mt-1">
-          <span>{listing.zip_code}</span>
-          <span>{listing.city}</span>
+      {/* DÉTAILS - Utilisation de l'espacement Outfit */}
+      <div className="py-6 px-1">
+        <div className="flex justify-between items-start gap-4">
+          <div className="space-y-1">
+            <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400">
+              {listing.property_type}
+            </h3>
+            <p className="text-lg font-light tracking-tight text-gray-900 italic">
+              {listing.city} <span className="text-gray-300 not-italic ml-1">{listing.zip_code}</span>
+            </p>
+          </div>
+          <p className="text-lg font-medium tracking-tighter text-gray-900">
+            {formattedPrice}
+          </p>
         </div>
 
-        <p className="text-teal-700 mt-1 font-bold">
-          {formattedPrice}
-        </p>
+        {/* CARACTÉRISTIQUES TECHNIQUES EN BAS */}
+        <div className="mt-4 pt-4 border-t border-gray-50 flex gap-6">
+          {listing.room_count && (
+            <div className="flex flex-col">
+              <span className="text-[8px] uppercase tracking-widest text-gray-400 font-bold">Pièces</span>
+              <span className="text-xs font-medium text-gray-700">{listing.room_count}</span>
+            </div>
+          )}
+          {listing.surface_area_m2 && (
+            <div className="flex flex-col">
+              <span className="text-[8px] uppercase tracking-widest text-gray-400 font-bold">Surface</span>
+              <span className="text-xs font-medium text-gray-700">{listing.surface_area_m2} m²</span>
+            </div>
+          )}
+          <div className="flex flex-col ml-auto">
+             <span className="text-[10px] text-gray-900 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 font-bold uppercase tracking-widest">
+               Voir le bien →
+             </span>
+          </div>
+        </div>
       </div>
     </Link>
   )

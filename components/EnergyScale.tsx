@@ -1,13 +1,28 @@
+"use client";
+
 import { EnergyClass } from "@/lib/dpe/energy-class";
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 
 interface EnergyScaleProps {
   value: EnergyClass | null;
-  title: string;
+  title?: string; // Optionnel pour corriger l'erreur TS
   subtitle?: string;
   metric?: string;
   numberValue?: number | null;
 }
+
+const CLASSES: EnergyClass[] = ["A", "B", "C", "D", "E", "F", "G"];
+
+// Couleurs officielles DPE version Flat
+const bgColorMap: Record<EnergyClass, string> = {
+  A: "bg-[#009640]",
+  B: "bg-[#52B145]",
+  C: "bg-[#C4D42D]",
+  D: "bg-[#F3E500]",
+  E: "bg-[#F9A11B]",
+  F: "bg-[#EB690B]",
+  G: "bg-[#D4002B]",
+};
 
 export default function EnergyScale({
   value,
@@ -18,69 +33,56 @@ export default function EnergyScale({
 }: EnergyScaleProps) {
   if (!value) return null;
 
-  const borderColorMap: Record<EnergyClass, string> = {
-    A: "border-emerald-600",
-    B: "border-lime-500",
-    C: "border-yellow-400",
-    D: "border-orange-400",
-    E: "border-orange-600",
-    F: "border-red-500",
-    G: "border-red-700",
-  };
-
-  const bgColorMap: Record<EnergyClass, string> = {
-    A: "bg-emerald-600",
-    B: "bg-lime-500",
-    C: "bg-yellow-400",
-    D: "bg-orange-400",
-    E: "bg-orange-600",
-    F: "bg-red-500",
-    G: "bg-red-700",
-  };
-
   return (
-    <div className="space-y-2">
-      {/* Titre */}
-      <div>
-        <h4 className="font-semibold text-sm">{title}</h4>
-        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
-      </div>
-
-      {/* Ligne valeur + bande */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mt-1">
-        {/* Valeur chiffrée */}
-        {numberValue != null && metric && (
-          <div
-            className={clsx(
-              "flex items-center gap-1 px-3 h-12 rounded-lg border-2 bg-white font-bold text-black  sm:w-fit w-2/3",
-              borderColorMap[value]
-            )}
-          >
-            <span className="text-lg">{numberValue}</span>
-            <span className="text-sm">{metric}</span>
-          </div>
-        )}
-
-        {/* Bande DPE */}
-        <div className="relative flex-1 mt-2 sm:mt-0 rounded-lg" style={{ minHeight: "3rem" }}>
-          {/* Bande colorée */}
-          <div
-            className={clsx(
-              "absolute left-0 top-0 h-full  pl-12 rounded-lg transition-all duration-500 w-2/3",
-              bgColorMap[value]
-            )}
-          />
-
-          {/* Lettre intégrée */}
-          <span
-            className={clsx(
-              "absolute left-2 top-0 h-full w-10 flex items-center justify-center font-bold text-2xl text-white",
-              bgColorMap[value]
-            )}
-          >
-            {value}
-          </span>
+    <div className="space-y-6 w-full max-w-md">
+      {/* HEADER FACULTATIF */}
+      {(title || subtitle) && (
+        <div className="space-y-1">
+          {title && <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-900">{title}</h4>}
+          {subtitle && <p className="text-[9px] uppercase tracking-widest text-gray-400 font-medium">{subtitle}</p>}
         </div>
+      )}
+
+      {/* ÉCHELLE GRAPHIQUE */}
+      <div className="flex flex-col gap-1.5">
+        {CLASSES.map((cls) => {
+          const isActive = value === cls;
+
+          return (
+            <div key={cls} className="flex items-center gap-4">
+              {/* Barre de l'échelle */}
+              <div
+                className={cn(
+                  "h-8 flex items-center justify-between px-3 transition-all duration-700 ease-in-out",
+                  bgColorMap[cls],
+                  isActive 
+                    ? "w-full ring-1 ring-gray-900 ring-offset-2" 
+                    : "w-[40%] opacity-20 grayscale-[0.3]"
+                )}
+                style={{ 
+                  width: isActive ? "100%" : `${30 + CLASSES.indexOf(cls) * 10}%` 
+                }}
+              >
+                <span className="text-white text-[11px] font-bold tracking-widest">
+                  {cls}
+                </span>
+
+                {isActive && numberValue && (
+                  <div className="text-white text-[10px] font-bold tracking-tighter animate-in fade-in duration-1000">
+                    {numberValue} {metric}
+                  </div>
+                )}
+              </div>
+
+              {/* Curseur textuel discret */}
+              {isActive && (
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-900 italic whitespace-nowrap hidden sm:block">
+                  Logement
+                </span>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
