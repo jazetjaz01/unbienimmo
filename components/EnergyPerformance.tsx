@@ -46,7 +46,9 @@ export default function EnergyPerformance({
               {annualCostMin != null && <>entre {annualCostMin.toLocaleString("fr-FR")} €</>}
               {annualCostMin != null && annualCostMax != null && <> et </>}
               {annualCostMax != null && <>{annualCostMax.toLocaleString("fr-FR")} €</>} par an
+              
             </p>
+            
           )}
 
           {diagnosticDate ? (
@@ -55,7 +57,9 @@ export default function EnergyPerformance({
             <p className="text-muted-foreground">
               Date du diagnostic non disponible
             </p>
+            
           )}
+          
         </div>
       )}
 
@@ -77,6 +81,7 @@ export default function EnergyPerformance({
           metric="kgCO₂/m².an"
         />
       </div>
+      <div className="text-gray-500 text-sm pt-2 ">Les informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques : www.georisques.gouv.fr"</div>
     </section>
   );
 }
