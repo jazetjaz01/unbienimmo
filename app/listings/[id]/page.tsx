@@ -55,9 +55,6 @@ interface Listing {
   diagnostic_date?: string | null;
 }
 
-/* -------------------------------
-   Utils (Placés ici pour corriger ReferenceError)
--------------------------------- */
 const formatDateFR = (date: string) => {
   if (!date) return "";
   return new Intl.DateTimeFormat("fr-FR", {
@@ -68,9 +65,6 @@ const formatDateFR = (date: string) => {
   }).format(new Date(date));
 };
 
-/* --------------------------------
-   Page Principale
---------------------------------- */
 export default async function ListingPage({
   params,
 }: {
@@ -78,7 +72,6 @@ export default async function ListingPage({
 }) {
   const { id } = await params;
 
-  /* --- Requête Supabase --- */
   const { data: listing } = await supabasePublic
     .from("listings")
     .select(`
@@ -98,7 +91,6 @@ export default async function ListingPage({
 
   if (!listing) notFound();
 
-  /* --- Gestion des Images --- */
   const sortedImages = listing.listing_images?.slice().sort(
     (a, b) => a.sort_order - b.sort_order
   ) ?? [];
@@ -132,55 +124,53 @@ export default async function ListingPage({
   }).format(listing.price);
 
   return (
-    <main className="min-h-screen bg-white font-sans selection:bg-gray-900 selection:text-white">
-      {/* Galerie */}
+    /* Suppression de font-sans pour utiliser Outfit héritée du layout */
+    <main className="min-h-screen bg-white selection:bg-gray-900 selection:text-white">
       <div className="w-full bg-gray-50">
         <Gallery sections={sections} />
       </div>
 
-      <div className="mx-auto px-6 md:px-12 lg:px-20 max-w-7xl grid grid-cols-1 lg:grid-cols-[1.8fr_1.2fr] gap-20 mt-16 pb-24">
-
-        {/* COLONNE GAUCHE : Storytelling & Performance */}
-        <div className="space-y-20">
+      <div className="mx-auto px-6 md:px-12 lg:px-20 max-w-7xl grid grid-cols-1 lg:grid-cols-[1.7fr_1.3fr] gap-20 mt-16 pb-24">
+        <div className="space-y-24">
           
-          {/* HEADER SECTION */}
           <div className="border-b border-gray-100 pb-12">
-            <div className="flex items-center gap-3 mb-6">
-               <span className="text-[10px] tracking-[0.3em] uppercase font-bold bg-gray-900 text-white px-3 py-1">
+            <div className="flex items-center gap-3 mb-8">
+               <span className="text-[10px] tracking-[0.4em] uppercase font-bold bg-gray-900 text-white px-3 py-1">
                 {listing.transaction_type === 'vendre' ? 'Vente' : 'Location'}
               </span>
-              <span className="text-[10px] tracking-[0.3em] uppercase font-bold text-gray-400">
+              <span className="text-[10px] tracking-[0.4em] uppercase font-bold text-gray-400">
                 {listing.property_type}
               </span>
             </div>
             
-            <h1 className="text-5xl font-light tracking-tight text-gray-900 mb-4 italic">
+            <h1 className="text-6xl font-light tracking-tighter text-gray-900 mb-6 italic">
               {listing.city}
             </h1>
             
-            <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-gray-500 mb-8">
+            <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-12 mb-10">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-gray-300" />
-                <span className="text-sm font-medium">{listing.zip_code} {listing.city}</span>
+                <span className="text-sm font-medium uppercase tracking-widest text-gray-500">
+                  {listing.zip_code} {listing.city}
+                </span>
               </div>
-              <div className="flex items-center gap-2 text-2xl font-light text-gray-900">
+              <div className="text-4xl font-light tracking-tighter text-gray-900 italic">
                 {formattedPrice}
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-6 pt-6 border-t border-gray-50">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-gray-400">
+            <div className="flex flex-wrap gap-8 pt-8 border-t border-gray-50">
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-gray-300">
                 <Hash className="h-3 w-3" /> Réf. {listing.id}
               </div>
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-gray-400">
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-gray-300">
                 <Calendar className="h-3 w-3" /> Mis à jour le {formatDateFR(listing.updated_at)}
               </div>
             </div>
           </div>
 
-          {/* FEATURES SECTION */}
           <section>
-            <h2 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-10">Caractéristiques du bien</h2>
+            <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-900 mb-12">Caractéristiques</h2>
             <ListingFeatures
               surfaceArea={listing.surface_area_m2}
               roomCount={listing.room_count}
@@ -189,22 +179,20 @@ export default async function ListingPage({
             />
           </section>
 
-          {/* DESCRIPTION SECTION */}
-          <section className="space-y-6">
-            <h2 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400">Description</h2>
+          <section className="space-y-8">
+            <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-900">Description</h2>
             {listing.description ? (
-              <p className="text-lg font-light leading-relaxed text-gray-700 whitespace-pre-line max-w-2xl">
+              <p className="text-xl font-light leading-relaxed text-gray-600 whitespace-pre-line max-w-2xl italic">
                 {listing.description}
               </p>
             ) : (
-              <p className="italic text-gray-300">Aucune description disponible pour ce bien.</p>
+              <p className="italic text-gray-300 uppercase text-[10px] tracking-widest">Aucune description disponible.</p>
             )}
           </section>
 
-          {/* DPE SECTION */}
-          <section className="pt-16 border-t border-gray-50">
-            <h2 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-10">Performance Énergétique</h2>
-            <div className="bg-gray-50/50 p-8 border border-gray-50">
+          <section className="pt-20 border-t border-gray-100">
+            <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-900 mb-12">Performance Énergétique</h2>
+            <div className="bg-gray-50/30 p-12 border border-gray-50">
                 <EnergyPerformance
                   energyClass={getEnergyClass(listing.energy_consumption ?? null)}
                   ghgClass={getGhgClass(listing.ghg_emissions ?? null)}
@@ -218,14 +206,11 @@ export default async function ListingPage({
           </section>
         </div>
 
-        {/* COLONNE DROITE : Contact & Formulaire (Sticky) */}
         <aside>
           <div className="lg:sticky lg:top-12 space-y-12">
-            
-            {/* Formulaire de rappel */}
-            <div className="border border-gray-100 p-10 bg-white shadow-[20px_20px_60px_rgba(0,0,0,0.02)]">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900 mb-8 border-b border-gray-50 pb-4">
-                Nous contacter
+            <div className="border border-gray-100 p-12 bg-white transition-all hover:shadow-[0_40px_80px_rgba(0,0,0,0.04)]">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-900 mb-10 border-b border-gray-50 pb-6 text-center">
+                Contact & Rappel
               </h3>
               <CallbackForm
                 listingId={listing.id}
@@ -236,18 +221,17 @@ export default async function ListingPage({
               />
             </div>
 
-            {/* Carte du conseiller */}
-            <div className="border border-gray-100 p-10 bg-gray-50/30">
-              <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">
-                Votre expert dédié
+            <div className="border border-gray-100 p-12 bg-gray-50/20">
+              <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-10 text-center">
+                Interlocuteur
               </h3>
               <ProfessionalCard professional={listing.professional} />
             </div>
 
-            <div className="px-4 text-center">
-              <p className="text-[9px] text-gray-300 uppercase tracking-widest leading-loose">
-                Annonce immobilière professionnelle. <br/>
-                Photos non contractuelles.
+            <div className="px-6 text-center">
+              <p className="text-[9px] text-gray-300 uppercase tracking-[0.5em] leading-loose font-bold">
+                UnBienImmo Solutions <br/>
+                Diffusion Professionnelle
               </p>
             </div>
           </div>
