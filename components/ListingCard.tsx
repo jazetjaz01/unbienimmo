@@ -38,7 +38,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   return (
     <Link href={`/listings/${listing.id}`} className="group block cursor-pointer bg-white">
       {/* CONTENEUR IMAGE - Suppression des arrondis pour le style Flat */}
-      <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-100">
+      <div className="relative w-full aspect-[3/3] overflow-hidden bg-gray-100 rounded-md">
         
         {/* LABELS MINIMALISTES */}
         <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start z-10">
