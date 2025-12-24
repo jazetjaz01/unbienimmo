@@ -1,6 +1,7 @@
 import Image from "next/image";
-import { Globe, Phone, BadgeCheck, ExternalLink } from "lucide-react";
-import { Separator } from "@/components/ui/separator"
+import { Globe, Phone, BadgeCheck, ArrowUpRight } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { getFullPublicUrl } from "@/lib/supabase/storage";
 interface Professional {
   name?: string;
   type?: string;
@@ -21,67 +22,64 @@ export default function ProfessionalCard({ professional }: ProfessionalCardProps
   if (!professional) return null;
 
   return (
-    <div className="mt-6 ">
-      {/* Ligne principale */}
-      <div className="flex gap-4">
-        {/* Logo */}
+    <div className="group">
+      <div className="flex flex-col sm:flex-row gap-8">
+        {/* LOGO - Format carré rigoureux */}
         <div className="flex-shrink-0">
           {professional.logo_url ? (
-            <Image
-              src={professional.logo_url}
-              alt={professional.name || "Logo"}
-              width={56}
-              height={56}
-              className="h-14 w-14 rounded-lg object-contain"
-            />
+            <div className="relative h-20 w-20 bg-white border border-gray-100 p-2 overflow-hidden">
+              <Image
+                src={professional.logo_url}
+                alt={professional.name || "Logo"}
+                fill
+                className="object-contain p-1 grayscale group-hover:grayscale-0 transition-all duration-500"
+              />
+            </div>
           ) : (
-            <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-slate-100 text-base font-semibold">
-              {professional.name?.charAt(0) ?? "?"}
+            <div className="flex h-20 w-20 items-center justify-center bg-gray-900 text-white text-xl font-light italic">
+              {professional.name?.charAt(0) ?? "P"}
             </div>
           )}
         </div>
 
-        {/* Bloc texte aligné sous le nom */}
-        <div className="flex flex-col gap-1 min-w-0">
-          {/* Nom */}
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold truncate">
+        {/* CONTENU TEXTUEL */}
+        <div className="flex flex-col flex-1 min-w-0">
+          {/* HEADER : Nom + Badge */}
+          <div className="flex items-center gap-3 mb-2">
+            <h3 className="text-[11px] uppercase tracking-[0.4em] font-bold text-gray-900">
               {professional.name}
             </h3>
             {professional.is_verified && (
-              <BadgeCheck size={16} className="text-teal-600" />
+              <BadgeCheck size={14} className="text-gray-900" />
             )}
-
-                <Separator orientation="vertical" />
-            {professional.type && (
-              <span className="text-base">
-                {professional.type}
-              </span>
-            )}
-
           </div>
 
-          {/* Adresse */}
-          {(professional.street_address ||
-            professional.city ||
-            professional.zip_code) && (
-            <p className="text-base truncate">
-              {professional.street_address && (
-                <span>{professional.street_address}, </span>
-              )}
-              {professional.zip_code} {professional.city}
+          {/* TYPE & ADRESSE */}
+          <div className="space-y-1 mb-6">
+            <p className="text-2xl font-light tracking-tighter text-gray-900 italic leading-none">
+              {professional.type || "Conseiller Immobilier"}
             </p>
-          )}
+            {(professional.street_address || professional.city) && (
+              <p className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">
+                {professional.street_address && <span>{professional.street_address}, </span>}
+                {professional.zip_code} {professional.city}
+              </p>
+            )}
+          </div>
 
-          {/* Ligne 2 : type + tel + site */}
-          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-            
+          <Separator className="bg-gray-50 mb-6" />
 
+          {/* ACTIONS / CONTACT */}
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
             {professional.phone && (
-              <span className="flex items-center gap-1 text-base">
-                <Phone size={14} />
-                {professional.phone}
-              </span>
+              <div className="flex items-center gap-3 group/phone">
+                <div className="h-8 w-8 rounded-none border border-gray-100 flex items-center justify-center group-hover/phone:border-gray-900 transition-colors">
+                  <Phone size={12} className="text-gray-400 group-hover/phone:text-gray-900" />
+                </div>
+                <span className="text-[11px] font-bold tracking-widest text-gray-900">
+                  {professional.phone}
+                </span>
+              </div>
             )}
 
             {professional.website && (
@@ -89,10 +87,12 @@ export default function ProfessionalCard({ professional }: ProfessionalCardProps
                 href={professional.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 font-medium text-teal-600 hover:underline text-base"
+                className="flex items-center gap-2 group/link"
               >
-                <ExternalLink size={14} />
-                Voir le site 
+                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 group-hover/link:text-gray-900 transition-colors">
+                  Accéder au site
+                </span>
+                <ArrowUpRight size={14} className="text-gray-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
               </a>
             )}
           </div>

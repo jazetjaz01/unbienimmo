@@ -23,12 +23,17 @@ interface ListingImage {
 }
 
 interface Professional {
-  id?: string;
-  first_name?: string;
-  last_name?: string;
-  phone?: string | null;
-  email?: string | null;
-  avatar_url?: string | null;
+  id: number;
+  name: string;
+  type: string;
+  phone: string | null;
+  website: string | null;
+  logo_url: string | null;
+  street_address: string | null;
+  zip_code: string | null;
+  city: string | null;
+  is_verified: boolean;
+  email: string | null;
 }
 
 interface Listing {
@@ -77,12 +82,17 @@ export default async function ListingPage({
     .select(`
       *,
       listing_images (image_url, sort_order),
-      professional:profiles (
+      professional:professionals (
         id,
-        first_name,
-        last_name,
-        phone,
-        email
+      name,
+      type,
+      phone,
+      website,
+      logo_url,
+      street_address,
+      zip_code,
+      city,
+      is_verified
       )
     `)
     .eq("id", id)
@@ -125,12 +135,12 @@ export default async function ListingPage({
 
   return (
     /* Suppression de font-sans pour utiliser Outfit héritée du layout */
-    <main className="min-h-screen bg-white selection:bg-gray-900 selection:text-white ">
+    <main className="min-h-screen bg-white selection:bg-gray-900 selection:text-white  ">
       <div className="w-full bg-gray-50">
         <Gallery sections={sections} />
       </div>
 
-      <div className="mx-auto px-6 md:px-12 lg:px-10 max-w-7xl grid grid-cols-1 lg:grid-cols-[1.7fr_1.3fr] gap-10 mt-16 pb-24 ">
+     <div className="mx-auto px-6 md:px-12 lg:px-16 max-w-[1440px] grid grid-cols-1 lg:grid-cols-[1.8fr_1.2fr] gap-16 mt-16 pb-24">
         <div className="space-y-24">
           
           <div className="border-b border-gray-100 pb-12">
