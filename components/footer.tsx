@@ -1,225 +1,130 @@
 import { Separator } from "@/components/ui/separator";
-import {
-  DribbbleIcon,
-  GithubIcon,
-  TwitchIcon,
-  TwitterIcon,
-} from "lucide-react";
 import Link from "next/link";
 import { Logo } from "./logo";
 
 const footerSections = [
   {
-    title: "Product",
+    title: "Plateforme",
     links: [
-      {
-        title: "Overview",
-        href: "#",
-      },
-      {
-        title: "Features",
-        href: "#",
-      },
-      {
-        title: "Solutions",
-        href: "#",
-      },
-      {
-        title: "Tutorials",
-        href: "#",
-      },
-      {
-        title: "Pricing",
-        href: "#",
-      },
-      {
-        title: "Releases",
-        href: "#",
-      },
+      { title: "Vue d'ensemble", href: "/dashboard" },
+      { title: "Nos offres", href: "/offres" },
+      { title: "Diffusion directe", href: "#" },
+      { title: "Mises à jour", href: "#" },
     ],
   },
   {
-    title: "Company",
+    title: "Société",
     links: [
-      {
-        title: "About us",
-        href: "#",
-      },
-      {
-        title: "Careers",
-        href: "#",
-      },
-      {
-        title: "Press",
-        href: "#",
-      },
-      {
-        title: "News",
-        href: "#",
-      },
-      {
-        title: "Media kit",
-        href: "#",
-      },
-      {
-        title: "Contact",
-        href: "#",
-      },
+      { title: "À propos", href: "/qui-sommes-nous" },
+      { title: "Indépendance", href: "#" },
+      { title: "Contact", href: "/contact" },
     ],
   },
   {
-    title: "Resources",
+    title: "Ressources",
     links: [
-      {
-        title: "Blog",
-        href: "#",
-      },
-      {
-        title: "Newsletter",
-        href: "#",
-      },
-      {
-        title: "Events",
-        href: "#",
-      },
-      {
-        title: "Help centre",
-        href: "#",
-      },
-      {
-        title: "Tutorials",
-        href: "#",
-      },
-      {
-        title: "Support",
-        href: "#",
-      },
+      { title: "Actualités", href: "/actualite" },
+      { title: "Aide & Support", href: "/faq" },
+      { title: "Guide Partenaire", href: "#" },
+    ],
+  },
+  {
+    title: "Services",
+    links: [
+      { title: "Agences", href: "#" },
+      { title: "Notaires", href: "#" },
+      { title: "Syndics", href: "#" },
+      { title: "Promoteurs", href: "#" },
     ],
   },
   {
     title: "Social",
     links: [
-      {
-        title: "Twitter",
-        href: "#",
-      },
-      {
-        title: "LinkedIn",
-        href: "#",
-      },
-      {
-        title: "Facebook",
-        href: "#",
-      },
-      {
-        title: "GitHub",
-        href: "#",
-      },
-      {
-        title: "AngelList",
-        href: "#",
-      },
-      {
-        title: "Dribbble",
-        href: "#",
-      },
+      { title: "LinkedIn", href: "#" },
+      { title: "Instagram", href: "#" },
+      { title: "Twitter (X)", href: "#" },
     ],
   },
   {
-    title: "Legal",
+    title: "Légal",
     links: [
-      {
-        title: "Terms",
-        href: "#",
-      },
-      {
-        title: "Privacy",
-        href: "#",
-      },
-      {
-        title: "Cookies",
-        href: "#",
-      },
-      {
-        title: "Licenses",
-        href: "#",
-      },
-      {
-        title: "Settings",
-        href: "#",
-      },
-      {
-        title: "Contact",
-        href: "#",
-      },
+      { title: "CGU / CGV", href: "/cgv" },
+      { title: "Confidentialité", href: "/mentions_legales" },
+      { title: "Cookies", href: "#" },
     ],
   },
 ];
 
 const Footer = () => {
   return (
-    <div className="min-h-screen flex flex-col px-4 sm:px-8 lg:px-16 xl:px-24">
-     
-      <footer className="border-t">
-        <div className="max-w-(--breakpoint-xl) mx-auto">
-          <div className="py-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-x-8 gap-y-10 px-6 xl:px-0">
-            <div className="col-span-full xl:col-span-2">
-              {/* Logo */}
-              <Logo />
-
-              <p className="mt-4 text-muted-foreground">
-                Design amazing digital experiences that create more happy in the
-                world.
-              </p>
+    <footer className="bg-white border-t border-gray-100 font-sans pt-32 pb-16">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        
+        {/* EN-TÊTE DU FOOTER */}
+        <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-24">
+          <Link href="/" className="inline-flex items-center gap-3 group">
+            <Logo />
+            <div className="flex flex-col border-l border-gray-100 pl-3">
+              <span className="text-[11px] tracking-[0.4em] uppercase font-bold text-gray-900 leading-none mb-1">
+                UnBienImmo
+              </span>
+              <span className="text-[9px] tracking-[0.2em] uppercase font-light text-gray-400 leading-none">
+                Solutions Pro
+              </span>
             </div>
+          </Link>
+          
+          <p className="max-w-sm text-[11px] leading-relaxed text-gray-400 uppercase tracking-[0.15em] font-light">
+            La première plateforme d'annonces immobilières géolocalisées pensée pour l'indépendance des professionnels.
+          </p>
+        </div>
 
-            {footerSections.map(({ title, links }) => (
-              <div key={title}>
-                <h6 className="font-medium">{title}</h6>
-                <ul className="mt-6 space-y-4">
-                  {links.map(({ title, href }) => (
-                    <li key={title}>
-                      <Link
-                        href={href}
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        {title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <Separator />
-          <div className="py-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-x-2 gap-y-5 px-6 xl:px-0">
-            {/* Copyright */}
-            <span className="text-muted-foreground">
-              &copy; {new Date().getFullYear()}{" "}
-              <Link href="https://solutionspro.unbienimmo.com" target="_blank">
-                Solutionspro.unbienimmo.com
-              </Link>
-              . Découvrez nos offres à destination des professionnels de l'immobilier
+        {/* GRILLE D'INDEX */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-8 gap-y-16">
+          {footerSections.map(({ title, links }) => (
+            <div key={title} className="flex flex-col space-y-8">
+              <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900 flex items-center gap-2">
+                <span className="h-px w-3 bg-gray-200" />
+                {title}
+              </h6>
+              <ul className="space-y-4">
+                {links.map(({ title, href }) => (
+                  <li key={title}>
+                    <Link
+                      href={href}
+                      className="text-[10px] uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-colors duration-300 inline-block relative group"
+                    >
+                      {title}
+                      <span className="absolute -bottom-1 left-0 w-0 h-px bg-gray-900 transition-all duration-300 group-hover:w-full" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <Separator className="mt-32 mb-12 bg-gray-50" />
+
+        {/* BARRE INFÉRIEURE */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-4 text-[9px] uppercase tracking-[0.4em] text-gray-300 font-bold">
+            <span>&copy; 2026 UNBIENIMMO.COM</span>
+            <span className="hidden md:block text-gray-100">|</span>
+            <span className="text-center md:text-left italic font-light lowercase tracking-widest">
+              pro.unbienimmo.com
             </span>
+          </div>
 
-            <div className="flex items-center gap-5 text-muted-foreground">
-              <Link href="#" target="_blank">
-                <TwitterIcon className="h-5 w-5" />
-              </Link>
-              <Link href="#" target="_blank">
-                <DribbbleIcon className="h-5 w-5" />
-              </Link>
-              <Link href="#" target="_blank">
-                <TwitchIcon className="h-5 w-5" />
-              </Link>
-              <Link href="#" target="_blank">
-                <GithubIcon className="h-5 w-5" />
-              </Link>
-            </div>
+          <div className="flex items-center gap-8">
+            <span className="text-[9px] uppercase tracking-[0.4em] text-gray-200">
+              Système certifié
+            </span>
+            <div className="h-1 w-1 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
           </div>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   );
 };
 
