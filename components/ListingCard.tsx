@@ -21,7 +21,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   const formattedPrice = new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
-    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(listing.price)
 
   const isNew = (() => {
@@ -36,73 +36,54 @@ export function ListingCard({ listing }: ListingCardProps) {
     : '/placeholder-image.jpg'
 
   return (
-    <Link href={`/listings/${listing.id}`} className="group block cursor-pointer bg-white">
-      {/* CONTENEUR IMAGE - Suppression des arrondis pour le style Flat */}
-      <div className="relative w-full aspect-[3/3] overflow-hidden bg-gray-100 rounded-md">
+    <Link href={`/listings/${listing.id}`} className="group block w-full transition-opacity hover:opacity-95">
+      {/* CONTENEUR GLOBAL RÉDUIT : Passé à 85% pour un effet très compact */}
+      <div className="mx-auto w-[85%]">
         
-        {/* LABELS MINIMALISTES */}
-        <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start z-10">
-          <div className="flex flex-col gap-2">
+        {/* IMAGE CARRÉE RÉDUITE */}
+        <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-gray-100">
+          
+          {/* BADGES : Masqués sur mobile (hidden), visibles sur sm (tablette/desktop) */}
+          <div className="absolute top-2 left-2 hidden sm:flex flex-col gap-1 z-10">
             {listing.exclusivite_agence && (
-              <span className="bg-white/90 backdrop-blur-sm text-gray-900 text-[9px] font-bold uppercase tracking-[0.2em] px-2 py-1 border border-gray-100">
+              <span className="bg-white/95 backdrop-blur-md text-gray-900 text-[6.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shadow-sm border border-gray-100">
                 Exclusivité
               </span>
             )}
             {isNew && (
-              <span className="bg-gray-900 text-white text-[9px] font-bold uppercase tracking-[0.2em] px-2 py-1">
+              <span className="bg-teal-600/90 backdrop-blur-md text-white text-[6.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded">
                 Nouveau
               </span>
             )}
           </div>
+
+          <Image
+            src={imageSrc}
+            alt={listing.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
+          />
         </div>
 
-        <Image
-          src={imageSrc}
-          alt={listing.title || 'Annonce'}
-          fill
-          className="transition-transform duration-700 ease-out group-hover:scale-110 object-cover grayscale-[0.1] group-hover:grayscale-0"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-        
-        {/* OVERLAY AU SURVOL */}
-        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      </div>
-
-      {/* DÉTAILS - Utilisation de l'espacement Outfit */}
-      <div className="py-6 px-1">
-        <div className="flex justify-between items-start gap-4">
-          <div className="space-y-1">
-            <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400">
-              {listing.property_type}
+        {/* INFOS COMPACTES ALIGNÉES SUR L'IMAGE */}
+        <div className="mt-2">
+          <div className="flex justify-between items-baseline gap-2">
+            <h3 className="text-[13px] font-semibold text-gray-900 truncate tracking-tight">
+              {listing.city} <span className="font-normal text-gray-400 text-[11px] ml-1">{listing.zip_code}</span>
             </h3>
-            <p className="text-lg font-light tracking-tight text-gray-900 italic">
-              {listing.city} <span className="text-gray-300 not-italic ml-1">{listing.zip_code}</span>
-            </p>
+            <span className="text-[13px] font-bold text-gray-900 whitespace-nowrap">
+              {formattedPrice}
+            </span>
           </div>
-          <p className="text-lg font-medium tracking-tighter text-gray-900">
-            {formattedPrice}
+          
+          <p className="text-[12px] text-gray-500 font-normal leading-tight mt-0.5 truncate italic">
+            {[
+              listing.property_type,
+              listing.surface_area_m2 ? `${listing.surface_area_m2} m²` : null,
+              listing.room_count ? `${listing.room_count} p.` : null
+            ].filter(Boolean).join(' • ')}
           </p>
-        </div>
-
-        {/* CARACTÉRISTIQUES TECHNIQUES EN BAS */}
-        <div className="mt-4 pt-4 border-t border-gray-50 flex gap-6">
-          {listing.room_count && (
-            <div className="flex flex-col">
-              <span className="text-[8px] uppercase tracking-widest text-gray-400 font-bold">Pièces</span>
-              <span className="text-xs font-medium text-gray-700">{listing.room_count}</span>
-            </div>
-          )}
-          {listing.surface_area_m2 && (
-            <div className="flex flex-col">
-              <span className="text-[8px] uppercase tracking-widest text-gray-400 font-bold">Surface</span>
-              <span className="text-xs font-medium text-gray-700">{listing.surface_area_m2} m²</span>
-            </div>
-          )}
-          <div className="flex flex-col ml-auto">
-             <span className="text-[10px] text-gray-900 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 font-bold uppercase tracking-widest">
-               Voir le bien →
-             </span>
-          </div>
         </div>
       </div>
     </Link>
