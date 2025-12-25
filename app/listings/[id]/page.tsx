@@ -58,6 +58,7 @@ interface Listing {
   annual_energy_cost_min?: number | null;
   annual_energy_cost_max?: number | null;
   diagnostic_date?: string | null;
+  energy_reference_year?: string | null;
 }
 
 const formatDateFR = (date: string) => {
@@ -200,9 +201,9 @@ export default async function ListingPage({
             )}
           </section>
 
-          <section className="pt-20 border-t border-gray-100">
-            <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-900 mb-12">Performance Énergétique</h2>
-            <div className="bg-gray-50/30 p-12 border border-gray-50">
+          <section className="bg-slate-50">
+           
+            <div className=" p-12  ">
                 <EnergyPerformance
                   energyClass={getEnergyClass(listing.energy_consumption ?? null)}
                   ghgClass={getGhgClass(listing.ghg_emissions ?? null)}
@@ -211,6 +212,7 @@ export default async function ListingPage({
                   annualCostMin={listing.annual_energy_cost_min ?? null}
                   annualCostMax={listing.annual_energy_cost_max ?? null}
                   diagnosticDate={listing.diagnostic_date ?? null}
+                  energy_reference_year={listing.energy_reference_year ?? null}
                 />
             </div>
           </section>
@@ -218,7 +220,7 @@ export default async function ListingPage({
 
         <aside>
           <div className="lg:sticky lg:top-12 space-y-12">
-            <div className="border border-gray-100 p-12 bg-white transition-all hover:shadow-[0_40px_80px_rgba(0,0,0,0.04)]">
+            <div className="border border-gray-300 p-12 bg-white transition-all hover:shadow-[0_40px_80px_rgba(0,0,0,0.04)]">
               <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-900 mb-10 border-b border-gray-50 pb-6 text-center">
                 Contact & Rappel
               </h3>
@@ -231,7 +233,7 @@ export default async function ListingPage({
               />
             </div>
 
-            <div className="border border-gray-100 p-12 bg-gray-50/20">
+            <div className="border border-gray-300 p-12 ">
               <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-10 text-center">
                 Interlocuteur
               </h3>

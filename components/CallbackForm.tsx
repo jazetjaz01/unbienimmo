@@ -25,8 +25,11 @@ export default function CallbackForm({
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const inputClasses = "w-full rounded-none border-b border-gray-100 bg-transparent py-3 text-sm font-medium transition-all focus:border-gray-900 focus:outline-none placeholder:text-gray-200 placeholder:uppercase placeholder:text-[10px] placeholder:tracking-widest"
-  const labelClasses = "text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]"
+  // MISE À JOUR : Contrastes renforcés pour les bordures et les placeholders
+  const inputClasses = "w-full rounded-none border-b  bg-transparent py-3 text-sm font-medium text-gray-900 transition-all focus:border-gray-900 focus:outline-none placeholder:text-gray-500 placeholder:uppercase placeholder:text-[10px] placeholder:tracking-widest"
+  
+  // MISE À JOUR : Label plus sombre (gray-600 au lieu de 400)
+  const labelClasses = "text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]"
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -34,8 +37,7 @@ export default function CallbackForm({
     setError(null)
 
     const formData = new FormData(e.currentTarget)
-    const formattedPrice = price ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price) : '-'
-
+    
     const payload = {
       first_name: formData.get('firstName'),
       last_name: formData.get('lastName'),
@@ -56,8 +58,8 @@ export default function CallbackForm({
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in duration-700">
         <CheckCircle2 size={32} className="text-gray-900 mb-4 font-light" />
-        <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-gray-900">Demande confirmée</h3>
-        <p className="mt-4 text-xs text-gray-400 italic font-light">Notre équipe vous recontactera sous peu.</p>
+        <h3 className="text-[12px] uppercase tracking-[0.3em] font-bold text-gray-900">Demande confirmée</h3>
+        <p className="mt-4 text-sm text-gray-600 italic font-light">Notre équipe vous recontactera sous peu.</p>
       </div>
     )
   }
@@ -65,7 +67,6 @@ export default function CallbackForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-10">
       <div className="space-y-8">
-        {/* Prénom / Nom */}
         <div className="grid grid-cols-2 gap-8">
           <div className="space-y-1">
             <label className={labelClasses}>Prénom</label>
@@ -77,7 +78,6 @@ export default function CallbackForm({
           </div>
         </div>
 
-        {/* Email & Téléphone */}
         <div className="space-y-8">
           <div className="space-y-1">
             <label className={labelClasses}>Email</label>
@@ -89,7 +89,6 @@ export default function CallbackForm({
           </div>
         </div>
 
-        {/* Message */}
         <div className="space-y-1">
           <label className={labelClasses}>Message</label>
           <textarea
@@ -101,13 +100,13 @@ export default function CallbackForm({
         </div>
       </div>
 
-      {error && <p className="text-[10px] uppercase font-bold text-red-500 tracking-widest text-center">{error}</p>}
+      {error && <p className="text-[10px] uppercase font-bold text-red-600 tracking-widest text-center">{error}</p>}
 
       <div className="space-y-6">
         <button
           disabled={loading}
           type="submit"
-          className="group flex w-full items-center justify-between border border-gray-900 bg-gray-900 px-6 py-4 transition-all hover:bg-white"
+          className="group flex w-full items-center justify-between border border-gray-900 bg-gray-900 px-6 py-4 transition-all hover:bg-white active:scale-[0.98]"
         >
           <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-white group-hover:text-gray-900 transition-colors">
             {loading ? 'ENVOI EN COURS...' : 'Envoyer la demande'}
@@ -116,8 +115,9 @@ export default function CallbackForm({
           {loading && <Loader2 className="h-4 w-4 animate-spin text-white group-hover:text-gray-900" />}
         </button>
 
-        <p className="text-[8px] text-center text-gray-300 uppercase leading-relaxed tracking-widest px-4 font-medium">
-          En validant ce formulaire, vous acceptez que vos données soient transmises à l'agence partenaire pour le traitement de votre demande.
+        {/* MISE À JOUR : Texte légal passé de gray-300 à gray-500 pour lisibilité */}
+        <p className="text-[9px] text-center text-gray-500 uppercase leading-relaxed tracking-widest px-4 font-medium">
+          En validant ce formulaire  vous acceptez que vos données soient transmises à l'agence immobilière ou professionel partenaire  pour le traitement de votre demande.
         </p>
       </div>
     </form>
