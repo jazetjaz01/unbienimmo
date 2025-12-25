@@ -59,6 +59,13 @@ interface Listing {
   annual_energy_cost_max?: number | null;
   diagnostic_date?: string | null;
   energy_reference_year?: string | null;
+  // Ajout du type pour les features jointes
+  listing_features?: {
+    feature: {
+      name: string;
+      icon: string | null;
+    }
+  }[];
 }
 
 const formatDateFR = (date: string) => {
@@ -78,22 +85,20 @@ export default async function ListingPage({
 }) {
   const { id } = await params;
 
+  // REQUÊTE ADAPTÉE : On inclut listing_features et la table features associée
   const { data: listing } = await supabasePublic
     .from("listings")
     .select(`
       *,
       listing_images (image_url, sort_order),
       professional:professionals (
-        id,
-      name,
-      type,
-      phone,
-      website,
-      logo_url,
-      street_address,
-      zip_code,
-      city,
-      is_verified
+        id, name, type, phone, website, logo_url, street_address, zip_code, city, is_verified
+      ),
+      listing_features (
+        feature:features (
+          name,
+          icon
+        )
       )
     `)
     .eq("id", id)
@@ -101,6 +106,12 @@ export default async function ListingPage({
     .maybeSingle<Listing>();
 
   if (!listing) notFound();
+
+  // MAPPAGE DES FEATURES DYNAMIQUES
+  const dynamicFeatures = listing.listing_features?.map((lf) => ({
+    name: lf.feature.name,
+    icon: lf.feature.icon
+  })) || [];
 
   const sortedImages = listing.listing_images?.slice().sort(
     (a, b) => a.sort_order - b.sort_order
@@ -135,95 +146,107 @@ export default async function ListingPage({
   }).format(listing.price);
 
   return (
-    /* Suppression de font-sans pour utiliser Outfit héritée du layout */
-    <main className="min-h-screen bg-white selection:bg-gray-900 selection:text-white  ">
-      <div className="w-full bg-gray-50">
+    <main className="min-h-screen bg-white selection:bg-gray-900 selection:text-white">
+      <div className="w-full bg-gray-50 border-b border-gray-100">
         <Gallery sections={sections} />
       </div>
 
-     <div className="mx-auto px-6 md:px-12 lg:px-16 max-w-[1440px] grid grid-cols-1 lg:grid-cols-[1.8fr_1.2fr] gap-16 mt-16 pb-24">
-        <div className="space-y-24">
+      <div className="mx-auto px-6 md:px-12 lg:px-20 max-w-[1440px] grid grid-cols-1 lg:grid-cols-[1.7fr_1.3fr] gap-24 mt-10 pb-10">
+        
+        <div className="space-y-32">
           
-          <div className="border-b border-gray-100 pb-12">
-            <div className="flex items-center gap-3 mb-8">
-               <span className="text-[10px] tracking-[0.4em] uppercase font-bold bg-gray-900 text-white px-3 py-1">
-                {listing.transaction_type === 'vendre' ? 'Vente' : 'Location'}
-              </span>
-              <span className="text-[10px] tracking-[0.4em] uppercase font-bold text-gray-400">
-                {listing.property_type}
-              </span>
-            </div>
-            
-            <h1 className="text-6xl font-light tracking-tighter text-gray-900 mb-6 italic">
-              {listing.city}
-            </h1>
-            
-            <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-12 mb-10">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-gray-300" />
-                <span className="text-sm font-medium uppercase tracking-widest text-gray-500">
-                  {listing.zip_code} {listing.city}
+          <header className="space-y-12">
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <span className="text-[9px] tracking-[0.5em] uppercase font-black bg-orange-500 text-white px-3 py-1.5">
+                  {listing.transaction_type === 'vendre' ? 'Vente' : 'Location'}
+                </span>
+                <div className="h-[1px] w-16 bg-gray-100" />
+                <span className="text-[9px] tracking-[0.5em] uppercase font-bold text-gray-400">
+                  {listing.property_type}
                 </span>
               </div>
-              <div className="text-4xl font-light tracking-tighter text-gray-900 italic">
-                {formattedPrice}
+              
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                <h1 className="text-7xl md:text-7xl font-light tracking-tighter text-gray-900 italic leading-[0.85]">
+                  {listing.city}
+                </h1>
+                <div className="text-5xl font-light tracking-tighter text-gray-900 italic md:border-l md:border-gray-100 md:pl-10">
+                  {formattedPrice}
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-8 pt-8 border-t border-gray-50">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-gray-300">
-                <Hash className="h-3 w-3" /> Réf. {listing.id}
-              </div>
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-gray-300">
-                <Calendar className="h-3 w-3" /> Mis à jour le {formatDateFR(listing.updated_at)}
-              </div>
-            </div>
-          </div>
-
-          <section>
-            <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-900 mb-12">Caractéristiques</h2>
-            <ListingFeatures
-              surfaceArea={listing.surface_area_m2}
-              roomCount={listing.room_count}
-              bedroomCount={listing.bedroom_count}
-              bathroomCount={listing.bathroom_count}
-            />
-          </section>
-
-          <section className="space-y-8">
-            <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-900">Description</h2>
-            {listing.description ? (
-              <p className="text-xl font-light leading-relaxed text-gray-600 whitespace-pre-line max-w-2xl italic">
-                {listing.description}
-              </p>
-            ) : (
-              <p className="italic text-gray-300 uppercase text-[10px] tracking-widest">Aucune description disponible.</p>
-            )}
-          </section>
-
-          <section className="bg-slate-50">
-           
-            <div className=" p-12  ">
-                <EnergyPerformance
-                  energyClass={getEnergyClass(listing.energy_consumption ?? null)}
-                  ghgClass={getGhgClass(listing.ghg_emissions ?? null)}
-                  energyValue={listing.energy_consumption ?? null}
-                  ghgValue={listing.ghg_emissions ?? null}
-                  annualCostMin={listing.annual_energy_cost_min ?? null}
-                  annualCostMax={listing.annual_energy_cost_max ?? null}
-                  diagnosticDate={listing.diagnostic_date ?? null}
-                  energy_reference_year={listing.energy_reference_year ?? null}
+            {/* SECTION CARACTÉRISTIQUES - Avec dynamicFeatures injecté */}
+            <section className="space-y-16">
+              <h2 className="text-[10px] uppercase tracking-[0.6em] font-black text-gray-300">
+                Fiche Technique
+              </h2>
+              <div className="px-2">
+                <ListingFeatures
+                  surfaceArea={listing.surface_area_m2}
+                  roomCount={listing.room_count}
+                  bedroomCount={listing.bedroom_count}
+                  bathroomCount={listing.bathroom_count}
+                  dynamicFeatures={dynamicFeatures}
                 />
+              </div>
+            </section>
+
+            <section className="space-y-12">
+               <h2 className="text-[10px] uppercase tracking-[0.6em] font-black text-gray-300">
+                Description de l'expert
+              </h2>
+              <div className="max-w-3xl">
+                {listing.description ? (
+                  <p className="text-2xl font-light leading-[1.7] text-gray-700 whitespace-pre-line italic opacity-90">
+                    {listing.description}
+                  </p>
+                ) : (
+                  <p className="italic text-gray-300 uppercase text-[10px] tracking-widest font-bold">Le descriptif détaillé est en cours de validation.</p>
+                )}
+              </div>
+            </section>
+
+            <div className="flex flex-wrap items-center gap-x-16 gap-y-6 py-10 border-y border-gray-50">
+              <div className="flex items-center gap-3">
+                <MapPin className="h-4 w-4 text-gray-300" />
+                <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-500">
+                  {listing.zip_code}, France
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Hash className="h-4 w-4 text-gray-300" />
+                <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-400">Réf. {listing.id}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Calendar className="h-4 w-4 text-gray-300" />
+                <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-400 italic">Dernière mise à jour : {formatDateFR(listing.updated_at)}</span>
+              </div>
             </div>
+          </header>
+
+          <section className="bg-slate-50 p-12 md:p-20">
+            <EnergyPerformance
+              energyClass={getEnergyClass(listing.energy_consumption ?? null)}
+              ghgClass={getGhgClass(listing.ghg_emissions ?? null)}
+              energyValue={listing.energy_consumption ?? null}
+              ghgValue={listing.ghg_emissions ?? null}
+              annualCostMin={listing.annual_energy_cost_min ?? null}
+              annualCostMax={listing.annual_energy_cost_max ?? null}
+              diagnosticDate={listing.diagnostic_date ?? null}
+              energy_reference_year={listing.energy_reference_year ?? null}
+            />
           </section>
         </div>
 
         <aside>
-          <div className="lg:sticky lg:top-12 space-y-12">
-            <div className="border border-gray-300 p-12 bg-white transition-all hover:shadow-[0_40px_80px_rgba(0,0,0,0.04)]">
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-900 mb-10 border-b border-gray-50 pb-6 text-center">
-                Contact & Rappel
-              </h3>
+          <div className="lg:sticky lg:top-12 space-y-10">
+            <div className="bg-white p-12 shadow-[0_40px_100px_rgba(0,0,0,0.04)] border border-gray-300 rounded-sm">
+              <div className="text-center mb-12">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.6em] text-gray-900 mb-3">Nous Contacter</h3>
+                <div className="h-[2px] w-8 bg-gray-900 mx-auto" />
+              </div>
               <CallbackForm
                 listingId={listing.id}
                 listingTitle={listing.title}
@@ -233,21 +256,22 @@ export default async function ListingPage({
               />
             </div>
 
-            <div className="border border-gray-300 p-12 ">
-              <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-10 text-center">
-                Interlocuteur
-              </h3>
+           <div className="lg:sticky lg:top-12 space-y-10">
+            <div className="bg-white p-12 shadow-[0_40px_100px_rgba(0,0,0,0.04)] border border-gray-300 rounded-sm">
+              
               <ProfessionalCard professional={listing.professional} />
             </div>
 
             <div className="px-6 text-center">
-              <p className="text-[9px] text-gray-300 uppercase tracking-[0.5em] leading-loose font-bold">
+              <p className="text-[9px] text-gray-300 uppercase tracking-[0.5em] leading-loose font-bold italic">
                 UnBienImmo Solutions <br/>
-                Diffusion Professionnelle
+                <span className="opacity-40">Diffusion pour professionnels de l'immobilier</span>
               </p>
             </div>
           </div>
+          </div>
         </aside>
+
       </div>
     </main>
   );
