@@ -128,11 +128,7 @@ export default async function Home() {
         ) : (
           <div className="text-center p-20 border rounded-lg mt-10 text-gray-500">
             Aucune annonce publiée n'a été trouvée.
-            <p className="mt-2">
-              <Link href="/create" className="text-blue-600 hover:underline">
-                Créer la première annonce ?
-              </Link>
-            </p>
+          
           </div>
         )}
       </div>
