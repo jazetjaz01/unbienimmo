@@ -16,9 +16,9 @@ const Navbar = async() => {
       <div className="mx-auto flex h-full w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         
         {/* Le Link enveloppe le Logo et le nom pour les rendre cliquables */}
-        <Link href="/" className="flex items-center gap-1 transition-opacity hover:opacity-80">
+        <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <Logo />
-          <p className="text-sm md:text-xl font-bold tracking-[0.2em] uppercase font-syncopate">
+          <p className="text-sm md:text-lg tracking-wide font-bold  font-syncopate">
   unbienimmo
 </p>
         </Link>
