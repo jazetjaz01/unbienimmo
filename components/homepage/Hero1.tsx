@@ -4,7 +4,7 @@ import Link from "next/link"; // 1. Import de Link
 
 const Hero1 = () => {
   return (
-    <section className="bg-background w-full py-12 md:py-12 lg:py-24">
+    <section className="bg-background w-full py-12 md:py-12 lg:py-12">
       <div className="container mx-auto px-4 md:px-6 flex flex-col items-center text-center">
         
         <h1 className="text-2xl md:text-3xl lg:text-5xl font-syncopate font-bold tracking-tighter text-foreground max-w-5xl leading-tight">

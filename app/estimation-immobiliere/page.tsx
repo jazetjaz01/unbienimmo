@@ -14,10 +14,9 @@ export default function EstimationPage() {
       
       <Hero1 />
       
-      {/* Tu peux ajouter d'autres sections sous le Hero si besoin */}
-      <section className="py-16 px-4">
+     
         <Hero2 />
-      </section>
+     
     </main>
   );
 }

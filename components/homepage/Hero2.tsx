@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const Hero2 = () => {
   return (
-    <section className="w-full bg-white py-8 md:py-12 overflow-hidden">
+   <section className="w-full bg-white py-8 md:py-12 overflow-hidden ">
       {/* Container ajusté en largeur max-w-7xl pour un affichage optimal */}
       <div className="max-w-450 mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
         
