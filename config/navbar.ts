@@ -10,14 +10,14 @@ import {
   Pizza,
   Plane,
   Sandwich,
-  Smile,
+  Smile,House,
 } from "lucide-react";
 
 export const foods = [
   {
-    title: "Dessert",
-    icon: CakeSlice,
-    description: "Sweet treats to satisfy your cravings.",
+    title: "Estimer votre bien",
+    icon: House,
+    description: "Appartement, maison, terrain ou local commercial.",
   },
   {
     title: "Pizza",

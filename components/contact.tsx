@@ -9,7 +9,7 @@ const Contact = () => (
       </b>
       <h2 className="mt-3 font-medium text-4xl tracking-tight">Prenez contact</h2>
       <p className="mt-3 text-lg text-muted-foreground md:text-xl">
-        Notre équipe est toujours là pour discuter
+        Notre équipe estimations est toujours là pour renseigner 
       </p>
       <div className="mx-auto grid max-w-(--breakpoint-xl) gap-16 px-6 py-24 md:grid-cols-2 md:gap-10 md:px-0 lg:grid-cols-3">
         <div className="flex flex-col items-center text-center">
