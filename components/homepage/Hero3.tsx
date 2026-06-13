@@ -1,44 +1,64 @@
-import React from 'react';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
-const Hero3 = () => {
+// Liste des technologies avec leurs chemins locaux
+const technologies = [
+  { src: "/home-page/carousel/nextjs.svg", alt: "Next.js" },
+  { src: "/home-page/carousel/github.svg", alt: "GitHub" },
+  { src: "/home-page/carousel/openai.svg", alt: "OpenAI" },
+  { src: "/home-page/carousel/ovh.svg", alt: "OVH" },
+  { src: "/home-page/carousel/supabase.svg", alt: "Supabase" },
+   { src: "/home-page/carousel/postgresql.svg", alt: "Postgresql" },
+];
+
+export default function Hero3() {
   return (
-    <section className="w-full bg-white py-16 md:py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div className="mx-auto max-w-7xl px-10 py-10">
+      <div className="justify-center">
+        <div>
+          <h2 className="text-xl tracking-tight items-center text-center">
+            Nous faisons confiance aux technologies suivantes pour vous fournir les meilleures estimations
+          </h2>
+        </div>
+      </div>
+      
+      <Carousel className="mt-10 w-full" opts={{ loop: true, align: "start" }}>
+        <CarouselContent>
+          {technologies.map((tech, index) => (
+            <CarouselItem
+              className="basis-1/2 md:basis-1/3 lg:basis-1/5" // Ajusté pour afficher plus d'éléments
+              key={index}
+            >
+              <div className="p-4 flex items-center justify-center">
+                {/* Utilisation de next/image pour optimiser l'affichage */}
+                <div className="relative h-20 w-full">
+                  <Image 
+                    src={tech.src} 
+                    alt={tech.alt}
+                    fill
+                    className="object-contain" // object-contain évite que le logo soit coupé
+                  />
+                </div>
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
         
-        {/* VISUEL À GAUCHE (Sur Desktop) */}
-        <div className="order-1 lg:order-1 w-full max-w-[500px] mx-auto">
-          <div className="relative h-[350px] md:h-[450px] w-full overflow-hidden rounded-xs">
-            <Image 
-              src="/home-page/home-page3.jpg" 
-              alt="Bien immobilier"
-              fill
-              className="object-cover"
-              priority
-            />
+        <div className="mt-4 flex items-center justify-between sm:justify-end">
+          <div className="flex items-center justify-end gap-1.5">
+            <CarouselPrevious className="-left-10 max-md:static max-md:translate-y-0" />
+            <CarouselNext className="-right-10 max-md:static max-md:translate-y-0" />
           </div>
         </div>
-
-        {/* TEXTE À DROITE (Sur Desktop) */}
-        <div className="order-2 lg:order-2 flex flex-col items-center lg:items-start text-center lg:text-left">
-          <h2 className="text-3xl md:text-4xl font-semibold text-slate-700 mb-6">
-            Estimez en ligne gratuitement votre  <br />
-             <span className="font-syncopate font-bold text-slate-700 tracking-tighter"> bien immo ?</span>
-          </h2>
-          <p className="text-lg text-slate-700 mb-10 max-w-md leading-relaxed font-normal">
-            Estimez une maison ou estimez un appartement à partir de son adresse et de ses caractéristiques, pour découvrir immédiatement son prix et une estimation du loyer potentiel. Les estimations sont mises à jour tous les jours.
-          </p>
-          <button
-            type="button"
-            className="w-full sm:w-auto bg-zinc-800 hover:bg-black text-white font-bold py-4 px-8 transition-all shadow-lg uppercase tracking-widest text-xs whitespace-nowrap active:scale-95"
-          >
-            Estimer un bien immobilier
-          </button>
-        </div>
-
-      </div>
-    </section>
+      </Carousel>
+    </div>
   );
-};
-
-export default Hero3;
+}

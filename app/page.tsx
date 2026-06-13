@@ -1,3 +1,4 @@
+
 import Hero1 from "@/components/homepage/Hero1";
 import Hero2 from "@/components/homepage/Hero2";
 import Hero3 from "@/components/homepage/Hero3";
@@ -8,6 +9,7 @@ export default function Home() {
     <main className="flex-1">
       <Hero1 />
       <Hero2 />
+   
       <Hero3 />
       <Hero4 />
     </main>
