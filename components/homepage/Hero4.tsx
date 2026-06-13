@@ -1,41 +1,64 @@
 import React from 'react';
-import Image from 'next/image';
+import Link from 'next/link';
+import { Calculator, History, MapPin, ArrowRight } from 'lucide-react';
+
+const services = [
+  {
+    title: "Estimation de votre bien",
+    description: "Obtenez une valeur précise et actualisée de votre logement en quelques clics grâce à notre simulateur.",
+    icon: Calculator,
+    href: "/estimation"
+  },
+  {
+    title: "Historique des ventes",
+    description: "Accédez aux données réelles des biens vendus dans votre secteur pour comprendre la réalité du marché.",
+    icon: History,
+    href: "/historique"
+  },
+  {
+    title: "Carte des prix immobiliers",
+    description: "Visualisez les tendances et les prix au m² quartier par quartier grâce à notre carte interactive.",
+    icon: MapPin,
+    href: "/carte"
+  }
+];
 
 const Hero4 = () => {
   return (
-    <section className="w-full bg-slate-200 py-16 md:py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        
-        {/* VISUEL À GAUCHE (Sur Desktop) */}
-        <div className="order-1 lg:order-1 w-full max-w-[500px] mx-auto">
-          <div className="relative h-[350px] md:h-[450px] w-full overflow-hidden rounded-xs">
-            <Image 
-              src="/home-page/home-page4.jpg" 
-              alt="Historique des ventes unbienimmobilier.com"
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-        </div>
+    <section className="py-24 px-6 bg-white">
+      <div className="max-w-450 mx-auto">
+        {/* Titre principal */}
+        <h2 className="text-4xl md:text-5xl font-medium text-center text-slate-900 mb-20 tracking-tight">
+          Sûr. Précis. Indépendant.
+        </h2>
 
-        {/* TEXTE À DROITE (Sur Desktop) */}
-        <div className="order-2 lg:order-2 flex flex-col items-center lg:items-start text-center lg:text-left">
-          <h2 className="text-3xl md:text-4xl font-semibold text-slate-700 mb-6">
-            Historique des ventes  <br />
-             <span className="font-syncopate font-bold text-slate-700 tracking-tighter"> immobilières</span>
-          </h2>
-          <p className="text-lg text-slate-700 mb-10 max-w-md leading-relaxed font-normal text-justify">
-            Déterminer le bon prix de vente pour un bien immobilier peut être complexe. Unbienimmo.com vous accompagne dans cette démarche en vous donnant accès aux biens récemment vendus dans votre quartier
-          </p>
-          <button
-            type="button"
-            className="w-full sm:w-auto bg-zinc-800 hover:bg-black text-white font-bold py-4 px-8 transition-all shadow-lg uppercase tracking-widest text-xs whitespace-nowrap active:scale-95"
-          >
-            Estimer un bien immobilier
-          </button>
+        {/* Grille des services */}
+        <div className="grid md:grid-cols-3 gap-16">
+          {services.map((service, index) => (
+            <div key={index} className="flex flex-col items-start">
+              {/* Icône (Style géométrique minimaliste) */}
+              <div className="mb-8 p-2 border border-slate-200 rounded-lg">
+                <service.icon className="w-10 h-10 text-slate-900 stroke-[1]" />
+              </div>
+              
+              {/* Contenu */}
+              <h3 className="text-xl font-semibold text-slate-900 mb-4">
+                {service.title}
+              </h3>
+              <p className="text-slate-600 mb-6 leading-relaxed flex-grow">
+                {service.description}
+              </p>
+              
+              {/* Lien "En savoir plus" */}
+              <Link 
+                href={service.href} 
+                className="inline-flex items-center text-sm font-medium text-slate-900 hover:text-blue-600 transition-colors"
+              >
+                En savoir plus <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </div>
+          ))}
         </div>
-
       </div>
     </section>
   );
