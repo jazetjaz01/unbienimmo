@@ -3,6 +3,7 @@ import Hero1 from "@/components/homepage/Hero1";
 import Hero2 from "@/components/homepage/Hero2";
 import Hero3 from "@/components/homepage/Hero3";
 import Hero4 from "@/components/homepage/Hero4";
+import Hero5 from "@/components/homepage/Hero5";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
    
       <Hero3 />
       <Hero4 />
+      <Hero5 />
     </main>
   );
 }
