@@ -1,6 +1,7 @@
 // app/estimation-immobilière/page.tsx
 import Hero1 from "@/components/estimation-immobiliere/Hero1";
 import Hero2 from "@/components/estimation-immobiliere/Hero2";
+import Hero3 from "@/components/estimation-immobiliere/Hero3";
 
 export const metadata = {
   title: 'Estimation Immobilière en ligne - Alamiia',
@@ -16,6 +17,7 @@ export default function EstimationPage() {
       
      
         <Hero2 />
+    <Hero3 />
      
     </main>
   );
