@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Autoplay from "embla-carousel-autoplay";
 import {
   Carousel,
   CarouselContent,
@@ -37,7 +38,18 @@ const Hero3 = () => {
   return (
     <section className="px-6 py-20 bg-white">
       <div className="container mx-auto max-w-7xl">
-        <Carousel className="w-full">
+        <Carousel 
+  className="w-full"
+  plugins={[
+    Autoplay({
+      delay: 6000, // Temps de pause entre les slides
+    }),
+  ]}
+  opts={{
+    loop: true,
+    duration: 300, // Plus ce nombre est élevé, plus le glissement est lent (valeur par défaut ~25)
+  }}
+>
           <CarouselContent>
             {testimonials.map((testimonial) => (
               <CarouselItem key={testimonial.id}>
@@ -45,7 +57,8 @@ const Hero3 = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          {/* Contrôles de navigation pour le défilement */}
+          
+          {/* Contrôles de navigation */}
           <div className="flex justify-end gap-2 mt-8">
             <CarouselPrevious className="relative static" />
             <CarouselNext className="relative static" />
@@ -70,7 +83,7 @@ const TestimonialCard = ({ testimonial }: { testimonial: (typeof testimonials)[n
 
     {/* Texte et Infos */}
     <div className="flex flex-col gap-4">
-      <blockquote className="text-2xl md:text-3xl font-semibold leading-snug">
+      <blockquote className="text-xl md:text-2xl font-semibold font-syncopate leading-snug">
         "{testimonial.testimonial}"
       </blockquote>
       
@@ -78,8 +91,6 @@ const TestimonialCard = ({ testimonial }: { testimonial: (typeof testimonials)[n
         <p className="font-semibold text-slate-900">{testimonial.name}</p>
         <p className="text-slate-600 text-sm">{testimonial.designation}</p>
       </div>
-
-      
     </div>
   </div>
 );
