@@ -3,33 +3,34 @@ const features = [
     title: "Maisons",
     description:
       "Optimized for speed with minimal loading times and instant interactions.",
-    image: "https://www.fffuel.co/images/dddepth-preview/dddepth-028.jpg",
+   image: "/home-page/estimations/estimation2.png",
+   
   },
   {
     title: "Appartements",
     description: "Tailor every component to match your brand or workflow.",
-    image: "https://www.fffuel.co/images/dddepth-preview/dddepth-051.jpg",
+    image: "/home-page/estimations/estimation1.png",
   },
   {
     title: "Terrains",
     description: "Built with clean, modern code and best practices in mind.",
-    image: "https://www.fffuel.co/images/dddepth-preview/dddepth-248.jpg",
-  },
-  {
-    title: "Locaux commerciaux",
-    description:
-      "Every component is designed to look great on all screen sizes.",
-    image: "https://www.fffuel.co/images/dddepth-preview/dddepth-045.jpg",
+    image: "/home-page/estimations/estimation3.png",
   },
   {
     title: "Bureaux",
+    description:
+      "Every component is designed to look great on all screen sizes.",
+    image: "/home-page/estimations/estimation4.png",
+  },
+  {
+    title: "Locaux commerciaux",
     description: "Built with accessibility best practices in mind.",
-    image: "https://www.fffuel.co/images/dddepth-preview/dddepth-034.jpg",
+   image: "/home-page/estimations/estimation5.png",
   },
   {
     title: "Fonds de commerce",
     description: "Easily connect with your favorite tools, APIs, and services.",
-    image: "https://www.fffuel.co/images/dddepth-preview/dddepth-012.jpg",
+   image: "/home-page/estimations/estimation6.png",
   },
 ];
 
