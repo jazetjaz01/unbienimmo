@@ -26,7 +26,7 @@ export const NavMenu = (props: ComponentProps<typeof NavigationMenu>) => (
           <ul className="grid w-[400px] gap-3 p-1 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
             {foods.map((food) => (
               <ListItem
-                href="/estimation-immobiliere"
+                href={food.href} 
                 icon={food.icon}
                 key={food.title}
                 title={food.title}
@@ -43,7 +43,7 @@ export const NavMenu = (props: ComponentProps<typeof NavigationMenu>) => (
           <ul className="grid w-[400px] gap-3 p-1 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
             {travelMenuItems.map((menuItem) => (
               <ListItem
-                href="#"
+                href={menuItem.href} 
                 icon={menuItem.icon}
                 key={menuItem.title}
                 title={menuItem.title}

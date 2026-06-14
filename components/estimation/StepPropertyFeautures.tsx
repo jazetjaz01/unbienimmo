@@ -119,7 +119,7 @@ const StepPropertyFeatures = ({ onNext, onPrev }: { onNext: () => void; onPrev: 
         />
 
         <NumericFeature 
-          label="Places de parking" 
+          label="Garage ou parking" 
           id="hasParking" 
           isActive={hasParking} 
           field="parkingCount" 

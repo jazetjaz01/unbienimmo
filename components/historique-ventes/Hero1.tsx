@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, MapPin, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEstimationStore } from '@/store/useEstimationStore';
 import { Button } from "@/components/ui/button";
 
 const Hero1 = () => {
@@ -11,12 +10,12 @@ const Hero1 = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState<any>(null);
   
   const router = useRouter();
-  const setStepData = useEstimationStore((state) => state.setStepData);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Gestion du clic extérieur pour fermer la liste
+  // Fermeture du menu si clic extérieur
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -27,16 +26,18 @@ const Hero1 = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Recherche API
+  // Recherche (Debounced)
   useEffect(() => {
-    const fetchAdresses = async () => {
-      if (query.length < 4) {
-        setSuggestions([]);
-        return;
-      }
+    if (query.length < 4) {
+      setSuggestions([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/adresses-estimation?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`/api/adresses-historique?q=${encodeURIComponent(query)}`);
         const data = await response.json();
         setSuggestions(data.features || []);
         setShowDropdown(true);
@@ -45,24 +46,29 @@ const Hero1 = () => {
       } finally {
         setIsLoading(false);
       }
-    };
-    const timer = setTimeout(fetchAdresses, 300);
+    }, 300);
+
     return () => clearTimeout(timer);
   }, [query]);
 
   const handleSelect = (feature: any) => {
-    setQuery(feature.properties.label);
+    setQuery(feature.properties.label || `${feature.properties.name}, ${feature.properties.city}`);
+    setSelectedFeature(feature);
     setShowDropdown(false);
-    setStepData({ 
-      address: feature.properties.name,
-      city: feature.properties.city,
-      postcode: feature.properties.postcode
-    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.length > 5) router.push('/estimer');
+    
+    if (!selectedFeature) {
+      alert("Veuillez sélectionner une adresse dans la liste déroulante.");
+      return;
+    }
+
+    const { citycode: insee } = selectedFeature.properties;
+    const [lng, lat] = selectedFeature.geometry.coordinates;
+    
+    router.push(`/historique-ventes/carte?lat=${lat}&lng=${lng}&insee=${insee}`);
   };
 
   return (
@@ -70,18 +76,18 @@ const Hero1 = () => {
       <div className="container mx-auto px-4 flex flex-col items-center text-center">
         
         {/* Titre et Sous-titre */}
-      <h1 className="text-2xl md:text-3xl lg:text-4xl font-syncopate font-bold tracking-tighter text-foreground max-w-5xl leading-tight">
-          Une bonne vente commence par une bonne estimation
+       <h1 className="text-2xl md:text-3xl lg:text-4xl font-syncopate font-bold tracking-tighter text-foreground max-w-5xl leading-tight">
+         Retrouvez le prix des biens vendus dans votre quartier
         </h1>
 
-        <p className="mt-6 text-xl  max-w-2xl leading-relaxed">
-          Découvrez la valeur réelle de votre bien en quelques secondes. Simple, rapide et 100% gratuit.
+        <p className="mt-6 text-xl text-muted-foreground max-w-2xl leading-relaxed">
+          Accédez aux données réelles du marché immobilier. Simple, rapide et transparent.
         </p>
 
-        {/* Barre de recherche intégrée */}
-        <div className="mt-12 w-full max-w-xl  relative" ref={dropdownRef}>
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 ">
-            <div className="relative flex-grow h-15">
+        {/* Barre de recherche */}
+        <div className="mt-12 w-full max-w-xl relative" ref={dropdownRef}>
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-grow">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
@@ -98,17 +104,18 @@ const Hero1 = () => {
               />
             </div>
             
-            <Button type="submit" size="lg" className="px-8 font-semibold text-lg rounded-full h-15">
-              Estimer <ArrowRight className="ml-2 h-5 w-5" />
+            <Button type="submit" size="lg" className="px-8 font-semibold text-lg rounded-full h-14">
+              Rechercher <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </form>
 
           {/* Liste des suggestions */}
           {showDropdown && suggestions.length > 0 && (
             <div className="absolute z-50 w-full mt-2 bg-background shadow-xl rounded-2xl overflow-hidden border border-border">
-              {suggestions.map((feature: any) => (
+              {suggestions.map((feature: any, index: number) => (
                 <button
-                  key={feature.properties.id}
+                  type="button"
+                  key={index}
                   onClick={() => handleSelect(feature)}
                   className="w-full text-left px-6 py-4 hover:bg-muted transition-colors border-b border-border last:border-0"
                 >

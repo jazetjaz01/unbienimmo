@@ -54,9 +54,9 @@ export const foods = [
 
 export const travelMenuItems = [
   {
-    title: "Destinations",
+    title: "Historique des ventes",
     icon: MapPin,
-    href: "/estimation-immobiliere", // Ajout du lien
+    href: "/historique-ventes", // Ajout du lien
     description: "Discover amazing places to visit.",
   },
   {
