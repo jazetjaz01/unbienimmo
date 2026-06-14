@@ -1,3 +1,5 @@
+"use client";
+
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Menu } from "lucide-react";
 import Link from "next/link";
@@ -7,9 +9,10 @@ import {
   SheetContent,
   SheetTitle,
   SheetTrigger,
+  SheetClose, // Import nécessaire pour fermer le menu
 } from "@/components/ui/sheet";
 import { Logo } from "@/components/logo";
-import { foods,travelMenuItems } from "@/config/navbar";
+import { foods, travelMenuItems } from "@/config/navbar";
 
 export const NavigationSheet = () => {
   return (
@@ -23,37 +26,49 @@ export const NavigationSheet = () => {
           <Menu />
         </Button>
       </SheetTrigger>
+      
       <SheetContent className="px-6 py-3">
         <Logo />
 
         <div className="mt-12 space-y-4 text-base">
-          <Link className="inline-block" href="#">
-            Home
-          </Link>
+          {/* Lien Accueil */}
+          <SheetClose asChild>
+            <Link className="inline-block font-bold" href="/">
+              Accueil
+            </Link>
+          </SheetClose>
 
+          {/* Section Services (Food remplacé par votre thématique) */}
           <div>
-            <div className="font-bold">Food</div>
+            <div className="font-bold">Nos Services</div>
             <ul className="mt-2 ml-1 space-y-3 border-l pl-4">
               {foods.map((foodItem) => (
                 <li key={foodItem.title}>
-                  <Link className="flex items-center gap-2" href="#">
-                    <foodItem.icon className="mr-2 h-5 w-5 text-muted-foreground" />
-                    {foodItem.title}
-                  </Link>
+                  <SheetClose asChild>
+                    {/* Assurez-vous que foodItem possède un href dans votre config */}
+                    <Link className="flex items-center gap-2" href={foodItem.href}>
+                      <foodItem.icon className="mr-2 h-5 w-5 text-muted-foreground" />
+                      {foodItem.title}
+                    </Link>
+                  </SheetClose>
                 </li>
               ))}
             </ul>
           </div>
 
+          {/* Section Voyage (Travel) */}
           <div>
-            <div className="font-bold">Travel</div>
+            <div className="font-bold">Découverte</div>
             <ul className="mt-2 ml-1 space-y-3 border-l pl-4">
               {travelMenuItems.map((item) => (
                 <li key={item.title}>
-                  <Link className="flex items-center gap-2" href="#">
-                    <item.icon className="mr-2 h-5 w-5 text-muted-foreground" />
-                    {item.title}
-                  </Link>
+                  <SheetClose asChild>
+                    {/* Assurez-vous que item possède un href dans votre config */}
+                    <Link className="flex items-center gap-2" href={item.href}>
+                      <item.icon className="mr-2 h-5 w-5 text-muted-foreground" />
+                      {item.title}
+                    </Link>
+                  </SheetClose>
                 </li>
               ))}
             </ul>

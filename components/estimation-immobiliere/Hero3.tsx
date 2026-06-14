@@ -42,7 +42,7 @@ const Hero3 = () => {
   className="w-full"
   plugins={[
     Autoplay({
-      delay: 6000, // Temps de pause entre les slides
+      delay: 10000, // Temps de pause entre les slides
     }),
   ]}
   opts={{
