@@ -74,7 +74,7 @@ const footerSections = [
 const Footer = () => {
   return (
     <footer className="bg-black text-white">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-450">
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 px-6 py-12 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {footerSections.map(({ title, links }) => (
             <div key={title}>
@@ -105,7 +105,8 @@ const Footer = () => {
             <Link href="/" target="_blank" className="text-white hover:text-slate-400 underline-offset-4 hover:underline">
               Unbienimmo.com
             </Link>
-            . Estimation de biens immobiliers
+           <span className="hidden sm:inline-block">. Estimation de biens immobiliers</span>
+  
           </span>
         </div>
       </div>
