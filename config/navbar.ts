@@ -11,44 +11,48 @@ import {
   Plane,
   Sandwich,
   Smile,House,
+  Building2,
+  SquareRoundCorner,
+  BriefcaseBusiness,
+  Building,
 } from "lucide-react";
 
 export const foods = [
   {
-    title: "Estimer votre bien",
+    title: "Estimer maison",
     icon: House,
     href: "/estimation-immobiliere", // Ajout du lien
-    description: "Appartement, maison, terrain ou local commercial.",
+    description: "Estimation de votre maison",
   },
   {
-    title: "Pizza",
-    icon: Pizza,
+    title: "Estimer appartement",
+    icon: Building2,
     href: "/estimation-immobiliere", // Ajout du lien
-    description: "Delicious, cheesy slices of goodness.",
+    description: "Estimation de votre appartement.",
   },
   {
-    title: "Sandwich",
-    icon: Sandwich,
+    title: "Estimer terrain",
+    icon: SquareRoundCorner,
     href: "/estimation-immobiliere", // Ajout du lien
-    description: "Classic and hearty fast food options.",
+    description: "Estimation de votre terrain",
   },
   {
-    title: "Coffee",
-    icon: Coffee,
+    title: "Estimer bureaux",
+    icon: BriefcaseBusiness,
     href: "/estimation-immobiliere", // Ajout du lien
-    description: "Your go-to boost of caffeine.",
+    description: "Estimation de vos bureaux",
   },
   {
-    title: "Ice Cream",
-    icon: IceCream,
+    title: "Locaux commerciaux",
+    icon: Building2,
     href: "/estimation-immobiliere", // Ajout du lien
-    description: "Cold, creamy delights for any mood.",
+    description: "Estimation locaux commerciaux",
   },
   {
-    title: "Fruit",
-    icon: Grape,
+    title: "Fond de commerce",
+    icon: Building,
     href: "/estimation-immobiliere", // Ajout du lien
-    description: "Fresh and healthy natural snacks.",
+    description: "Estimation fond de commerce",
   },
 ];
 
@@ -56,8 +60,8 @@ export const travelMenuItems = [
   {
     title: "Historique des ventes",
     icon: MapPin,
-    href: "/historique-ventes", // Ajout du lien
-    description: "Discover amazing places to visit.",
+    href: "/historique-ventes", 
+    description: "Toutes les ventes en France des 10 dernières années géolocalisées",
   },
   {
     title: "Hotels",
