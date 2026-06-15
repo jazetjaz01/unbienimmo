@@ -1,64 +1,73 @@
-import { MailIcon, MapPinIcon, PhoneIcon } from "lucide-react";
+import { MailIcon, MapPinIcon, PhoneIcon, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-const Contact = () => (
-  <div className="flex min-h-screen items-center justify-center py-16">
-    <div className="text-center">
-      <b className="font-medium text-muted-foreground text-sm uppercase tracking-wide">
-        Contactez-nous
-      </b>
-      <h2 className="mt-3 font-medium text-4xl tracking-tight">Prenez contact</h2>
-      <p className="mt-3 text-lg text-muted-foreground md:text-xl">
-        Notre équipe estimations est toujours là pour renseigner 
-      </p>
-      <div className="mx-auto grid max-w-(--breakpoint-xl) gap-16 px-6 py-24 md:grid-cols-2 md:gap-10 md:px-0 lg:grid-cols-3">
-        <div className="flex flex-col items-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border/30 bg-primary/5 text-primary shadow-xl/2 dark:bg-primary/10">
-            <MailIcon />
-          </div>
-          <h3 className="mt-6 font-medium text-xl">Email</h3>
-          <p className="mt-2 text-muted-foreground">
-            Notre équipe est là !
+const Contact = () => {
+  const contactDetails = [
+    {
+      title: "Email",
+      description: "Notre équipe est là pour vous répondre.",
+      icon: MailIcon,
+      action: "contact@unbienimmo.com",
+      href: "mailto:contact@unbienimmo.com"
+    },
+    {
+      title: "Bureau",
+      description: "Passez nous voir à Perpignan.",
+      icon: MapPinIcon,
+      action: "7 avenue de Banyuls sur Mer, 66100 Perpignan",
+      href: "https://maps.google.com"
+    },
+    {
+      title: "Téléphone",
+      description: "Lundi-Samedi de 8h à 20h.",
+      icon: PhoneIcon,
+      action: "+33 6 16 22 46 82",
+      href: "tel:+33616224682"
+    }
+  ];
+
+  return (
+    <section className="py-24 px-6 bg-white">
+      <div className="max-w-6xl mx-auto">
+        {/* Titre */}
+        <div className="text-center mb-20">
+          <h2 className="text-5xl md:text-5xl font-bold text-slate-900 tracking-tight mb-6 font-syncopate">
+            Prenez contact
+          </h2>
+          <p className=" text-lg max-w-4xl mx-auto">
+            Notre équipe d'experts est à votre disposition pour vous accompagner dans vos projets immobiliers.
           </p>
-          <Link
-            className="mt-4 font-medium text-primary"
-            href="mailto:contact@unbienimmo.com"
-          >
-            contact@unbienimmo.com
-          </Link>
         </div>
-        <div className="flex flex-col items-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border/30 bg-primary/5 text-primary shadow-xl/2 dark:bg-primary/10">
-            <MapPinIcon />
-          </div>
-          <h3 className="mt-6 font-medium text-xl">Bureau</h3>
-          <p className="mt-2 text-muted-foreground">
-            Passez nous voir à Perpignan !
-          </p>
-          <Link
-            className="mt-4 font-medium text-primary"
-            href="https://map.google.com"
-            target="_blank"
-          >
-            7 avenue de Banyuls sur Mer <br /> 66100 Perpignan
-          </Link>
-        </div>
-        <div className="flex flex-col items-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border/30 bg-primary/5 text-primary shadow-xl/2 dark:bg-primary/10">
-            <PhoneIcon />
-          </div>
-          <h3 className="mt-6 font-medium text-xl">Téléphone</h3>
-          <p className="mt-2 text-muted-foreground">Lundi-Samedi de 8h à 20h.</p>
-          <Link
-            className="mt-4 font-medium text-primary"
-            href="tel:contact@unbienimmo.com"
-          >
-            +0616224682
-          </Link>
+
+        {/* Grille de contact */}
+        <div className="grid md:grid-cols-3 gap-12">
+          {contactDetails.map((item, index) => (
+            <div key={index} className="flex flex-col items-start border-l border-slate-200 pl-8">
+              {/* Icône style minimaliste */}
+              <div className="mb-8 p-2 border border-slate-200 rounded-lg">
+                <item.icon className="w-8 h-8 text-slate-900 stroke-[1]" />
+              </div>
+              
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                {item.title}
+              </h3>
+              <p className="text-slate-600 mb-6 leading-relaxed">
+                {item.description}
+              </p>
+              
+              <Link 
+                href={item.href}
+                className="inline-flex items-center text-sm font-medium text-slate-900 hover:text-blue-600 transition-colors"
+                target={item.title === "Bureau" ? "_blank" : undefined}
+              >
+                {item.action} <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
-  </div>
-);
+    </section>
+  );
+};
 
 export default Contact;
