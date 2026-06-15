@@ -31,7 +31,7 @@ const Contact = () => {
       <div className="max-w-6xl mx-auto">
         {/* Titre */}
         <div className="text-center mb-20">
-          <h2 className="text-5xl md:text-5xl font-bold text-slate-900 tracking-tight mb-6 font-syncopate">
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight mb-6 font-syncopate">
             Prenez contact
           </h2>
           <p className=" text-lg max-w-4xl mx-auto">
