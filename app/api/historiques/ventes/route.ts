@@ -37,7 +37,7 @@ export async function GET(request: Request) {
   WHERE ST_DWithin(
     geom, 
     ST_Transform(ST_SetSRID(ST_MakePoint($1, $2), 4326), 2154), 
-    500
+    200
   )
   AND geom IS NOT NULL;
 `;

@@ -9,46 +9,46 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Coordonnées manquantes' }, { status: 400 });
   }
 
-  // Delta de 0.001 : cela crée une zone de recherche (bbox) d'environ 100m.
-  // C'est assez large pour inclure la parcelle, mais assez précis pour 
-  // ne pas ramener trop de parcelles voisines inutiles.
   const delta = 0.001; 
   const latVal = parseFloat(lat);
   const lngVal = parseFloat(lng);
 
-  const minLat = latVal - delta;
-  const maxLat = latVal + delta;
-  const minLon = lngVal - delta;
-  const maxLon = lngVal + delta;
-
-  // Construction de l'URL WFS Géoportail
   const url = `https://data.geopf.fr/wfs/ows` +
-    `?service=WFS` +
-    `&version=2.0.0` +
-    `&request=GetFeature` +
+    `?service=WFS&version=2.0.0&request=GetFeature` +
     `&typeName=CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle` +
-    `&outputFormat=application/json` +
-    `&srsName=EPSG:4326` +
-    `&bbox=${minLon},${minLat},${maxLon},${maxLat},EPSG:4326`;
+    `&outputFormat=application/json&srsName=EPSG:4326` +
+    `&bbox=${lngVal - delta},${latVal - delta},${lngVal + delta},${latVal + delta},EPSG:4326`;
+
+  // Création d'un contrôleur de timeout (5 secondes)
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'MonAppCadastre/1.0 (contact@tondomaine.com)', // Indispensable pour le Geoportail
+        'Accept': 'application/json'
+      }
+    });
+    
+    clearTimeout(timeout);
     
     if (!response.ok) {
-      throw new Error(`Erreur Géoportail: ${response.status}`);
+      // Si le Geoportail est en surcharge, on logue mais on ne fait pas planter l'UI
+      console.error(`Erreur Geoportail: ${response.statusText}`);
+      return NextResponse.json({ type: "FeatureCollection", features: [] });
     }
     
     const data = await response.json();
+    return NextResponse.json(data);
 
-    // Retourne la donnée structurée pour être lue par ton CadastreLayer
-    // Remplace ceci :
-// return NextResponse.json({ data });
-
-// Par ceci :
-return NextResponse.json(data);
-
-  } catch (error) {
-    console.error("Erreur proxy cadastre:", error);
-    return NextResponse.json({ error: 'Erreur lors de la récupération des données' }, { status: 500 });
+  } catch (error: any) {
+    clearTimeout(timeout);
+    console.error("Erreur proxy cadastre:", error.message);
+    
+    // On renvoie un tableau vide plutôt qu'une erreur 500 
+    // pour permettre à la carte de continuer à fonctionner silencieusement
+    return NextResponse.json({ type: "FeatureCollection", features: [] });
   }
 }
