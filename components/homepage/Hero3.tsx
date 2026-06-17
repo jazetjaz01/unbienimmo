@@ -21,7 +21,8 @@ const technologies = [
 
 export default function Hero3() {
   return (
-    <div className="mx-auto max-w-7xl px-10 py-10">
+    <div className="bg-slate-100 mt-10">
+    <div className="mx-auto max-w-7xl px-10 py-10 ">
       <div className="justify-center">
         <div>
           <h2 className="text-xl tracking-tight items-center text-center">
@@ -59,6 +60,7 @@ export default function Hero3() {
           </div>
         </div>
       </Carousel>
+    </div>
     </div>
   );
 }

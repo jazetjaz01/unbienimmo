@@ -11,9 +11,10 @@ export default function Home() {
       <Hero1 />
       <Hero2 />
    
-      <Hero3 />
+    
       <Hero4 />
       <Hero5 />
+        <Hero3 />
     </main>
   );
 }

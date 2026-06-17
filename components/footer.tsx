@@ -26,14 +26,14 @@ const footerSections = [
     ],
   },
   {
-    title: "Resources",
+    title: "Ressources",
     links: [
-      { title: "Blog", href: "#" },
-      { title: "Newsletter", href: "#" },
-      { title: "Events", href: "#" },
-      { title: "Help centre", href: "#" },
-      { title: "Tutorials", href: "#" },
-      { title: "Support", href: "#" },
+      { title: "Actualité", href: "/actualite" },
+      { title: "Newsletter", href: "/contact" },
+      { title: "Evenements", href: "/contact" },
+      { title: "Centre d'aide", href: "/contact" },
+      { title: "Méthodologie", href: "/contact" },
+      { title: "Support", href: "/contact" },
     ],
   },
   {
@@ -48,7 +48,7 @@ const footerSections = [
     ],
   },
   {
-    title: "Réseaux",
+    title: "Réseaux sociaux",
     links: [
       { title: "Twitter", href: "#" },
       { title: "LinkedIn", href: "#" },
