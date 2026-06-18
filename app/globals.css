@@ -122,7 +122,34 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+/* Arrondis sur le popup lui-même */
+.mapboxgl-popup-content {
+  border-radius: 12px !important;
+  padding: 0 !important; /* On gère le padding dans le div interne */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
 
+/* Style de la croix de fermeture */
+.mapboxgl-popup-close-button {
+  background: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  top: 8px !important;
+  right: 8px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Permet au popup de s'étendre plus largement */
+.mapboxgl-popup {
+  max-width: 300px !important; /* Ajuste cette valeur selon tes besoins (ex: 300px, 400px) */
+}
+
+/* Optionnel : si tu veux aussi ajuster le contenu interne */
+.mapboxgl-popup-content {
+  width: 100%;
+}
 @layer base {
   * {
     @apply border-border outline-ring/50;

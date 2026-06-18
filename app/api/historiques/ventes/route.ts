@@ -1,11 +1,23 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 
+// Dictionnaire de correspondance entre les filtres frontend et les valeurs réelles de la BDD
+const TYPE_MAPPING: Record<string, string[]> = {
+  maison: ["DES MAISONS", "MAISON - INDETERMINEE", "UNE MAISON"],
+  appartement: ["DEUX APPARTEMENTS", "UN APPARTEMENT"],
+  terrain: [
+    "TERRAIN AGRICOLE MIXTE", "TERRAIN ARTIFICIALISE MIXTE", "TERRAIN D'AGREMENT", 
+    "TERRAIN D'EXTRACTION", "TERRAIN DE TYPE RESEAU", "TERRAIN DE TYPE TAB", 
+    "TERRAIN DE TYPE TERRE ET PRE", "TERRAIN FORESTIER", "TERRAIN LANDES ET EAUX", 
+    "TERRAIN NATUREL MIXTE", "TERRAIN NON BATIS INDETERMINE", "TERRAIN VERGER", "TERRAIN VITICOLE"
+  ]
+};
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   
   const bounds = searchParams.get('bounds');
-  // On récupère le zoom pour adapter la limite (défaut: 16)
+  const typeParam = searchParams.get('type'); // ex: "maison,terrain"
   const zoom = parseFloat(searchParams.get('zoom') || '16');
 
   if (!bounds) {
@@ -13,12 +25,23 @@ export async function GET(request: Request) {
   }
 
   const [west, south, east, north] = bounds.split(',').map(Number);
+  const limit = parseInt(searchParams.get('limit') || '100');
 
-  // Plus le zoom est faible, plus on limite drastiquement le nombre de points
-// Dans votre fichier API route
-const limitParam = searchParams.get('limit');
-// Si le paramètre est présent, on l'utilise, sinon on garde la logique de zoom
-const limit = limitParam ? parseInt(limitParam) : (zoom < 12 ? 100 : 1000);
+  // Logique de conversion : transformer les types du front en valeurs réelles de la DB
+  const rawTypes = typeParam ? typeParam.split(',') : [];
+  let valuesToQuery: string[] = [];
+  
+  const isAll = rawTypes.includes('tous') || rawTypes.length === 0;
+
+  if (!isAll) {
+    rawTypes.forEach(t => {
+      if (TYPE_MAPPING[t]) {
+        valuesToQuery.push(...TYPE_MAPPING[t]);
+      }
+    });
+  }
+
+  const filterByTypes = valuesToQuery.length > 0;
 
   try {
     const query = `
@@ -52,6 +75,7 @@ const limit = limitParam ? parseInt(limitParam) : (zoom < 12 ? 100 : 1000);
               ST_Transform(ST_MakeEnvelope($1, $2, $3, $4, 4326), 2154)
             )
             AND geom IS NOT NULL
+            ${filterByTypes ? "AND libtypbien = ANY($6)" : ""}
             ORDER BY datemut DESC
             LIMIT $5
           ) AS subquery
@@ -59,7 +83,11 @@ const limit = limitParam ? parseInt(limitParam) : (zoom < 12 ? 100 : 1000);
       ) as geojson;
     `;
     
-    const { rows } = await pool.query(query, [west, south, east, north, limit]);
+    // On prépare les paramètres (si filterByTypes est vrai, on ajoute le tableau des valeurs)
+    const params: any[] = [west, south, east, north, limit];
+    if (filterByTypes) params.push(valuesToQuery);
+
+    const { rows } = await pool.query(query, params);
     return NextResponse.json(rows[0]?.geojson || { type: "FeatureCollection", features: [] });
   } catch (err) {
     console.error("Erreur API Ventes:", err);
