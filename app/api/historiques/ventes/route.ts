@@ -56,7 +56,7 @@ export async function GET(request: Request) {
                 'adresse', l_idpar,
                 'prix', valeurfonc,
                 'type', libtypbien,
-                'surface', sbati,
+               'surface', COALESCE(sbati, sterr, 0),
                 'pieces', (
                   (COALESCE(nbapt1pp, 0) * 1) + (COALESCE(nbapt2pp, 0) * 2) + 
                   (COALESCE(nbapt3pp, 0) * 3) + (COALESCE(nbapt4pp, 0) * 4) + 
