@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,6 +22,7 @@ interface UserNavProps {
 }
 
 export function UserNav({ user }: UserNavProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -42,22 +44,41 @@ export function UserNav({ user }: UserNavProps) {
   }
 
   const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
-  // Utilisation du nom complet présent dans tes logs user_metadata
   const userName = user.user_metadata?.full_name || user.user_metadata?.name || "Utilisateur";
   const initials = userName.substring(0, 2).toUpperCase();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={avatarUrl} alt={userName} />
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <div className="flex items-center gap-3">
+        {/* Lien "Mon espace" */}
+        <Link href="/dashboard" className="text-sm font-medium hover:underline">
+          Mon espace
+        </Link>
 
-      <DropdownMenuContent className="w-60" align="end" forceMount>
+        {/* Le Trigger possède les événements pour ouvrir au survol */}
+        <DropdownMenuTrigger asChild>
+          <div 
+            onMouseEnter={() => setIsOpen(true)} 
+            onMouseLeave={() => setIsOpen(false)}
+          >
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={avatarUrl} alt={userName} />
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
+            </Button>
+          </div>
+        </DropdownMenuTrigger>
+      </div>
+
+      {/* Le Content possède aussi les événements pour rester ouvert */}
+      <DropdownMenuContent 
+        className="w-60" 
+        align="end" 
+        forceMount
+        onMouseEnter={() => setIsOpen(true)} 
+        onMouseLeave={() => setIsOpen(false)}
+      >
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{userName}</p>
