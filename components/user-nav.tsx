@@ -4,11 +4,12 @@ import { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { LogOut, UserPlus, LogIn, LayoutDashboard } from "lucide-react";
+import { LogOut, LayoutDashboard, User as UserIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -26,59 +27,64 @@ export function UserNav({ user }: UserNavProps) {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.refresh();
+    window.location.href = "/";
   };
 
-  // Génération d'initiales pour le fallback
-  const initials = user?.email?.substring(0, 2).toUpperCase() ?? "U";
+  if (!user) {
+    return (
+      <Button variant="ghost" asChild className="gap-2">
+        <Link href="/auth/login">
+          <UserIcon className="size-4" />
+          Se connecter
+        </Link>
+      </Button>
+    );
+  }
+
+  const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+  // Utilisation du nom complet présent dans tes logs user_metadata
+  const userName = user.user_metadata?.full_name || user.user_metadata?.name || "Utilisateur";
+  const initials = userName.substring(0, 2).toUpperCase();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative size-10 rounded-full">
-          <Avatar className="size-full">
-            <AvatarImage src={user?.user_metadata?.avatar_url} alt="Avatar" />
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={avatarUrl} alt={userName} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      
-      <DropdownMenuContent align="end" className="w-56 mt-2">
-        {user ? (
-          <>
-            <div className="px-2 py-1.5 text-xs text-muted-foreground truncate">
+
+      <DropdownMenuContent className="w-60" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{userName}</p>
+            <p className="text-xs leading-none text-muted-foreground truncate">
               {user.email}
-            </div>
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard" className="flex items-center cursor-pointer">
-                <LayoutDashboard className="mr-2 size-4" />
-                Tableau de bord
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              className="text-destructive focus:text-destructive cursor-pointer"
-              onClick={handleLogout}
-            >
-              <LogOut className="mr-2 size-4" />
-              Se déconnecter
-            </DropdownMenuItem>
-          </>
-        ) : (
-          <>
-            <DropdownMenuItem asChild>
-              <Link href="/auth/login" className="flex items-center cursor-pointer">
-                <LogIn className="mr-2 size-4" />
-                Se connecter
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/auth/sign-up" className="flex items-center cursor-pointer">
-                <UserPlus className="mr-2 size-4" />
-                Créer un compte
-              </Link>
-            </DropdownMenuItem>
-          </>
-        )}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/dashboard" className="flex items-center">
+            <LayoutDashboard className="mr-2 size-4" />
+            <span>Tableau de bord</span>
+          </Link>
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem 
+          className="cursor-pointer text-red-600 focus:text-red-600" 
+          onClick={handleLogout}
+        >
+          <LogOut className="mr-2 size-4" />
+          <span>Se déconnecter</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

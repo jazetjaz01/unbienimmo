@@ -58,39 +58,34 @@ export const foods = [
 
 export const travelMenuItems = [
   {
-    title: "Historique des ventes",
+    title: "Historique ventes maisons",
     icon: MapPin,
     href: "/historique-ventes", 
-    description: "Toutes les ventes en France des 10 dernières années géolocalisées",
+    description: "Toutes les ventes des 10 dernières années géolocalisées",
   },
   {
-    title: "Hotels",
-    icon: Hotel,
-    href: "/estimation-immobiliere", // Ajout du lien
-    description: "Find the best stays for your trips.",
+    title: "Historique ventes appartements",
+    icon: MapPin,
+    href: "/historique-ventes", 
+    description: "Toutes les ventes des 10 dernières années géolocalisées",
   },
   {
-    title: "Flights",
-    icon: Plane,
-    href: "/estimation-immobiliere", // Ajout du lien
-    description: "Get deals and tips on air travel.",
+    title: "Historique ventes terrains",
+    icon: MapPin,
+    href: "/historique-ventes", 
+   description: "Toutes les ventes des 10 dernières années géolocalisées",
   },
   {
-    title: "Packing",
-    icon: Package,
-    href: "/estimation-immobiliere", // Ajout du lien
-    description: "Essential checklists for stress-free packing.",
+    title: "Historique ventes locaux",
+    icon: MapPin,
+    href: "/historique-ventes", 
+   description: "Toutes les ventes des 10 dernières années géolocalisées",
   },
   {
-    title: "Activities",
+    title: "Estimation personalisée",
     icon: Smile,
     href: "/estimation-immobiliere", // Ajout du lien
-    description: "Exciting things to do wherever you go.",
+    description: "Estimation personalisée.",
   },
-  {
-    title: "Travel Tips",
-    icon: Backpack,
-    href: "/estimation-immobiliere", // Ajout du lien
-    description: "Make every trip smooth and memorable.",
-  },
+  
 ];
