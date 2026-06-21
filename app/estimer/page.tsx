@@ -19,7 +19,7 @@ export default function EstimationPage() {
   // Ce callback sera déclenché quand l'inscription classique ou via Google aura réussi
   const handleAuthSuccess = () => {
     // Redirection vers ta page de succès ou dashboard
-    window.location.href = '/estimation-success';
+    window.location.href = '/dashboard';
   };
 
   // Nous avons 7 étapes au total

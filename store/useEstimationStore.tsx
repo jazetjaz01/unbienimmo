@@ -6,6 +6,8 @@ interface EstimationData {
   address: string;
   city: string;
   postcode: string;
+  lat: number | null; 
+  lon: number | null; 
   
   // Étape 2 : Type
   propertyType: 'maison' | 'appartement' | 'duplex' | 'triplex' | 'loft' | 'hotel_particulier' | null;
@@ -59,6 +61,8 @@ interface EstimationStore {
 }
 
 const initialData: Partial<EstimationData> = {
+  lat: null,
+  lon: null,
   address: "",
   city: "",
   postcode: "",

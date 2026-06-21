@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ShieldCheck, Heart, Eye, EyeOff, Loader2, Home } from 'lucide-react';
 import { createClient } from "@/lib/supabase/client";
@@ -16,17 +16,14 @@ interface StepProps {
 const StepFinalRegister = ({ onSuccess, onPrev }: StepProps) => {
   const router = useRouter();
   const { data: estimationData } = useEstimationStore();
-  
-  // false = Vue "Créer un compte", true = Vue "J'ai déjà un compte"
-  const [isLoginMode, setIsLoginMode] = useState(false); 
+  const isProcessing = useRef(false);
+
+  const [isLoginMode, setIsLoginMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
-  // États de chargement et d'erreur
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isGoogleAuthenticated, setIsGoogleAuthenticated] = useState(false);
 
-  // Champs du formulaire
   const [civility, setCivility] = useState<'madame' | 'monsieur'>('madame');
   const [lastName, setLastName] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -34,24 +31,41 @@ const StepFinalRegister = ({ onSuccess, onPrev }: StepProps) => {
   const [email, setEmail] = useState(estimationData.email || '');
   const [password, setPassword] = useState('');
 
-  // Remplir les champs si déjà saisis au préalable
   useEffect(() => {
     if (estimationData.phoneNumber) setPhoneNumber(estimationData.phoneNumber);
     if (estimationData.email) setEmail(estimationData.email);
   }, [estimationData]);
 
-  // Traitement final (Store + Supabase)
   const handleProcessAllData = async (user: any) => {
+    if (isProcessing.current) return;
+    isProcessing.current = true;
     setLoading(true);
+
     try {
-      const calculatedPrice = 350000; 
+      const queryParams = new URLSearchParams({
+        lat: estimationData.lat?.toString() || "0",
+        lon: estimationData.lon?.toString() || "0",
+        postcode: estimationData.postcode || "",
+        surface: estimationData.surface?.toString() || "0",
+      });
+
+      const response = await fetch(`/api/estimation?${queryParams.toString()}`);
+      if (!response.ok) throw new Error("Erreur lors du calcul de l'estimation");
+     
+
+      const result = await response.json();
+      const calculatedPrice = result.estimation;
 
       const payload = {
         user_id: user.id,
         estimated_price: calculatedPrice,
+        market_price_m2: result.prixM2, 
+  coefficient: result.coefficientApplique, 
         address: estimationData.address || "",
         city: estimationData.city || "",
         postcode: estimationData.postcode || "",
+        lat: estimationData.lat,
+        lon: estimationData.lon,
         property_type: estimationData.propertyType || "appartement",
         surface: Number(estimationData.surface) || 0,
         land_surface: estimationData.landSurface ? Number(estimationData.landSurface) : null,
@@ -76,6 +90,7 @@ const StepFinalRegister = ({ onSuccess, onPrev }: StepProps) => {
         construction_period: estimationData.constructionPeriod || null,
         property_state: estimationData.propertyState || "standard",
         property_quality: estimationData.propertyQuality || "comparable",
+        
         user_type: estimationData.userType || "particulier",
         is_owner: estimationData.isOwner !== undefined ? estimationData.isOwner : true,
         property_usage: estimationData.propertyUsage || null,
@@ -84,42 +99,51 @@ const StepFinalRegister = ({ onSuccess, onPrev }: StepProps) => {
         phone_number: phoneNumber || user.user_metadata?.phone_number || ""
       };
 
-      const { error } = await supabase.from('estimations').insert([payload]);
-      if (error) throw error;
+      // Utilisation de upsert pour gérer l'unicité via l'index SQL
+      const { error: insertError } = await supabase
+        .from('estimations')
+        .upsert([payload], { onConflict: 'user_id, address' });
+
+      if (insertError) throw insertError;
 
       onSuccess();
-      router.push('/dashboard');
+      // Navigation forcée pour éviter les conflits RSC de Next.js
+      window.location.href = '/dashboard';
     } catch (error: any) {
+      console.error("Erreur critique:", error);
       setAuthError("Erreur lors de la sauvegarde : " + error.message);
       setLoading(false);
+      isProcessing.current = false;
     }
   };
 
-  // Gestion du retour Google OAuth
   useEffect(() => {
+    let isMounted = true;
+
     const checkUserAndProcess = async () => {
+      if (typeof window !== 'undefined' && window.location.pathname === '/dashboard') return;
+      
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      if (user && isMounted) {
         setIsGoogleAuthenticated(true);
         await handleProcessAllData(user);
       }
     };
+    
     checkUserAndProcess();
+    return () => { isMounted = false; };
   }, []);
 
   const handleGoogleSignUp = async () => {
     setLoading(true);
-    setAuthError(null);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-        },
+        options: { redirectTo: `${window.location.origin}/dashboard` },
       });
       if (error) throw error;
     } catch (error: any) {
-      setAuthError(error.message || "Impossible de se connecter avec Google.");
+      setAuthError(error.message);
       setLoading(false);
     }
   };
@@ -127,58 +151,30 @@ const StepFinalRegister = ({ onSuccess, onPrev }: StepProps) => {
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
-
-    if (!email || !password) {
-      setAuthError("Veuillez remplir tous les champs obligatoires.");
-      return;
-    }
-
-    if (!isLoginMode) {
-      if (!firstName || !lastName) {
-        setAuthError("Le nom et le prénom sont obligatoires pour créer un compte.");
-        return;
-      }
-      if (password.length < 8) {
-        setAuthError("Le mot de passe doit contenir au moins 8 caractères.");
-        return;
-      }
-    }
-
+    if (!email || !password) return setAuthError("Champs obligatoires.");
+    
     setLoading(true);
-
     try {
       let activeUser = null;
-
       if (isLoginMode) {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         activeUser = data.user;
       } else {
         const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              first_name: firstName,
-              last_name: lastName,
-              phone_number: phoneNumber,
-              civility: civility
-            }
-          }
+          email, password,
+          options: { data: { first_name: firstName, last_name: lastName, phone_number: phoneNumber, civility } }
         });
         if (error) throw error;
         activeUser = data.user;
       }
 
-      if (activeUser) {
-        await handleProcessAllData(activeUser);
-      }
+      if (activeUser) await handleProcessAllData(activeUser);
     } catch (error: any) {
-      setAuthError(error.message || "Une erreur est survenue.");
+      setAuthError(error.message);
       setLoading(false);
     }
   };
-
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-xl mx-auto pb-12 font-sans text-left">
       
