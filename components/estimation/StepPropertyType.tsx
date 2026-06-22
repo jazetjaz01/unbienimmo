@@ -38,9 +38,12 @@ const StepPropertyType = ({ onNext, onPrev }: StepProps) => {
 
  const handleContinue = () => {
   if (selected) {
-    // On aligne l'assertion sur les types exacts attendus par le store
+    // Si l'utilisateur choisit "maison", on envoie "house" au store
+    // Sinon on envoie la valeur telle quelle.
+    const normalizedType = selected === 'maison' ? 'house' : selected;
+
     setStepData({ 
-      propertyType: selected as "maison" | "appartement" | "duplex" | "triplex" | "loft" | "hotel_particulier" 
+      propertyType: normalizedType as "house" | "apartment" | "duplex" | "triplex" | "loft" | "hotel_particulier"
     });
     onNext();
   }
