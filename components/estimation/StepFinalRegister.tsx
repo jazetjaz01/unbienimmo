@@ -42,9 +42,13 @@ const StepFinalRegister = ({ onSuccess, onPrev }: StepProps) => {
     setLoading(true);
 
     try {
+      // AJOUT : Inclusion du paramètre propertyType ici
       const queryParams = new URLSearchParams({
         lat: estimationData.lat?.toString() || "0",
         lon: estimationData.lon?.toString() || "0",
+        propertyState: estimationData.propertyState || "standard",
+        propertyQuality: estimationData.propertyQuality || "comparable",
+        propertyType: estimationData.propertyType || "apartment", // Ajout de la typologie
         postcode: estimationData.postcode || "",
         surface: estimationData.surface?.toString() || "0",
       });
@@ -57,6 +61,9 @@ const StepFinalRegister = ({ onSuccess, onPrev }: StepProps) => {
       const calculatedPrice = result.estimation;
 
       const payload = {
+      
+        confidence_score: result.indiceConfiance, 
+        nb_transactions_reference: result.nbTransactions,
         user_id: user.id,
         estimated_price: calculatedPrice,
         market_price_m2: result.prixM2, 
@@ -66,7 +73,8 @@ const StepFinalRegister = ({ onSuccess, onPrev }: StepProps) => {
         postcode: estimationData.postcode || "",
         lat: estimationData.lat,
         lon: estimationData.lon,
-        property_type: estimationData.propertyType || "appartement",
+        property_type: estimationData.propertyType || "apartment",
+
         surface: Number(estimationData.surface) || 0,
         land_surface: estimationData.landSurface ? Number(estimationData.landSurface) : null,
         rooms: Number(estimationData.rooms) || 1,

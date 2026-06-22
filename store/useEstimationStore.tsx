@@ -10,11 +10,12 @@ interface EstimationData {
   lon: number | null; 
   
   // Étape 2 : Type
-  propertyType: 'maison' | 'appartement' | 'duplex' | 'triplex' | 'loft' | 'hotel_particulier' | null;
+  // Remplace 'maison' | 'appartement' ... par les valeurs normalisées
+propertyType: 'house' | 'apartment' | 'duplex' | 'triplex' | 'loft' | 'hotel_particulier' | null;
   
   // Étape 3 : Détails techniques
   surface: number | string;
-  landSurface: number | string;
+  landSurface: number | string | null;
   rooms: number;
   bathrooms: number;
   floor: number;

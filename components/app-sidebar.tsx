@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link"; // Assure-toi d'importer Link
 import * as React from "react";
 import { 
   LayoutDashboard, 
@@ -41,7 +41,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader className="p-4">
-        <div className="flex items-center gap-2 px-1">
+        {/* On utilise un Link pour rendre tout le bloc cliquable vers la racine "/" */}
+        <Link href="/" className="flex items-center gap-2 px-1 hover:opacity-80 transition-opacity">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-cyan-700 text-white">
             <Home className="size-4" />
           </div>
@@ -49,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <span className="font-bold text-sm tracking-tight">Unbienimmo</span>
             <span className="text-[10px] text-muted-foreground uppercase">Espace Propriétaire</span>
           </div>
-        </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent>
@@ -62,11 +63,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <a href="/dashboard/profile"><User /> Mon Profil</a>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
+              {/*<SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <a href="/dashboard/settings"><Settings /> Paramètres</a>
               </SidebarMenuButton>
-            </SidebarMenuItem>
+            </SidebarMenuItem>*/}
           </SidebarMenu>
         </SidebarGroup>
 
@@ -79,20 +80,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <a href="/dashboard"><LayoutDashboard /> Tableau de bord</a>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
+            {/*<SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <a href="/dashboard/estimations"><Home /> Mes Estimations</a>
               </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
+            </SidebarMenuItem>*/}
+            {/*<SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <a href="/dashboard/simulateur"><Calculator /> Simulateur</a>
               </SidebarMenuButton>
-            </SidebarMenuItem>
+           </SidebarMenuItem>*/}
           </SidebarMenu>
         </SidebarGroup>
 
-        {/* Marché Local */}
+        {/* 
         <SidebarGroup>
           <SidebarGroupLabel>Marché Local</SidebarGroupLabel>
           <SidebarMenu>
@@ -111,6 +112,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+        Marché Local */}
       </SidebarContent>
 
       <SidebarFooter className="border-t p-2">

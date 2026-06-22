@@ -38,8 +38,8 @@ const StepPropertyDetailsRefined = ({ onNext, onPrev }: { onNext: () => void; on
 
   // Génération des périodes de construction
   const periods = ["Avant 1900"];
-  for (let year = 1900; year <= 2020; year += 20) {
-    periods.push(`${year} - ${year + 20}`);
+  for (let year = 1900; year <= 2020; year += 10) {
+    periods.push(`${year} - ${year + 10}`);
   }
   periods.push("Après 2020");
 
