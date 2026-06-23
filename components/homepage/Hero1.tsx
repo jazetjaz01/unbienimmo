@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link"; // 1. Import de Link
+import Link from "next/link"; 
 
 const Hero1 = () => {
   return (
@@ -17,16 +17,18 @@ const Hero1 = () => {
 
         <div className="mt-12 flex flex-col sm:flex-row gap-4 items-center">
           
-          {/* 2. Utilisation de Link avec le Button */}
           <Link href="/estimation-immobiliere">
             <Button size="lg" className="px-8 font-semibold text-lg rounded-full">
               Estimer mon bien <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
 
-          <Button size="lg" variant="outline" className="px-8 font-semibold text-lg rounded-full">
-            Comment ça marche ?
-          </Button>
+          {/* Lien ajouté ici */}
+          <Link href="https://www.unbienimmo.com/actualite/comment-nous-estimons-">
+            <Button size="lg" variant="outline" className="px-8 font-semibold text-lg rounded-full">
+              Comment ça marche ?
+            </Button>
+          </Link>
           
         </div>
 
