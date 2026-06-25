@@ -10,9 +10,14 @@ const MapContainer = dynamic(() => import('@/components/MapContainer'), {
 
 export default function Page() {
   const [data, setData] = useState<any>(null);
+  const [communesData, setCommunesData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
 
+  // Fonction pour réinitialiser la sélection
+  const handleReset = () => setSelectedDept(null);
+
+  // Charger les départements
   useEffect(() => {
     async function fetchData() {
       try {
@@ -20,12 +25,28 @@ export default function Page() {
         if (!res.ok) throw new Error('Erreur lors du chargement des données');
         const json = await res.json();
         setData(json);
-      } catch (err: any) {
-        setError(err.message);
-      }
+      } catch (err: any) { setError(err.message); }
     }
     fetchData();
   }, []);
+
+  // Charger les communes quand un département est sélectionné
+  useEffect(() => {
+    if (!selectedDept) {
+      setCommunesData(null);
+      return;
+    }
+
+    async function fetchCommunes() {
+      try {
+        const res = await fetch(`https://geo.api.gouv.fr/communes?codeDepartement=${selectedDept}&format=geojson&geometry=contour`);
+        if (!res.ok) throw new Error("Erreur API communes");
+        const json = await res.json();
+        setCommunesData(json);
+      } catch (err) { console.error("Erreur chargement communes", err); }
+    }
+    fetchCommunes();
+  }, [selectedDept]);
 
   if (error) return <div>Erreur : {error}</div>;
   if (!data) return <div>Chargement des données...</div>;
@@ -74,7 +95,13 @@ export default function Page() {
       </section>
 
       <section style={{ flex: 1, position: 'relative' }}>
-        <MapContainer data={data} selectedDepartment={selectedDept} />
+        <MapContainer 
+  data={data} 
+  communesData={communesData} 
+  selectedDepartment={selectedDept} 
+  onResetSelection={handleReset}
+  onDepartmentClick={(code) => setSelectedDept(code)} // <-- AJOUTEZ CECI
+/>
       </section>
     </main>
   );
