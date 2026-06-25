@@ -1,15 +1,10 @@
 import Link from "next/link";
-import { User } from "@supabase/supabase-js"; // Import du type User
 import { Logo } from "@/components/logo";
 import { NavMenu } from "@/components/nav-menu";
 import { NavigationSheet } from "@/components/navigation-sheet";
 import { UserNav } from "./user-nav";
 
-interface NavbarProps {
-  user: User | null; // La Navbar reçoit désormais l'utilisateur en prop
-}
-
-const Navbar = ({ user }: NavbarProps) => {
+const Navbar = () => {
   return (
     <nav className="h-16 border-b bg-background">
       <div className="mx-auto flex h-full w-full items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -24,8 +19,8 @@ const Navbar = ({ user }: NavbarProps) => {
         <NavMenu className="hidden md:block" />
         
         <div className="flex items-center gap-3">
-           {/* On passe l'utilisateur reçu en prop à UserNav */}
-           <UserNav user={user} />
+           {/* UserNav gère maintenant sa propre session en interne */}
+           <UserNav />
 
           <div className="md:hidden">
             <NavigationSheet />

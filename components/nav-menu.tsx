@@ -56,7 +56,7 @@ export const NavMenu = (props: ComponentProps<typeof NavigationMenu>) => (
       </NavigationMenuItem>
       <NavigationMenuItem>
         <Button asChild variant="ghost">
-          <Link href="/carte-prix">Carte prix</Link>
+          <Link href="/prix-immobilier">Carte prix</Link>
         </Button>
       </NavigationMenuItem>
        <NavigationMenuItem>
