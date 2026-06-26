@@ -54,45 +54,53 @@ export default function Page() {
   return (
     <main style={{ display: 'flex', height: '100vh', width: '100%' }}>
       <section style={{ 
-        width: '450px', 
-        padding: '24px', 
-        borderRight: '1px solid #e5e7eb', 
-        overflowY: 'auto',
-        backgroundColor: '#ffffff'
-      }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '16px' }}>
-          Prix immobilier partout en France
-        </h1>
-        <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '20px' }}>
-          Cliquez sur un département pour zoomer.
-        </p>
+  width: '600px', // Un peu plus large pour laisser respirer le tableau
+  padding: '24px', 
+  borderRight: '1px solid #e5e7eb', 
+  overflowY: 'auto',
+  backgroundColor: '#ffffff'
+}}>
+  <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '24px', color: '#333' }}>
+    Prix immobilier partout en France
+  </h1>
+  
+  <h2 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '16px', borderBottom: '2px solid #333', paddingBottom: '8px' }}>
+    Le prix du m² à la vente ( source Etalab) et estimations des loyers
+  </h2>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {data.features
-            .sort((a: any, b: any) => a.properties.code.localeCompare(b.properties.code))
-            .map((f: any) => (
-              <div 
-                key={f.id} 
-                onClick={() => setSelectedDept(f.properties.code)}
-                style={{ 
-                  padding: '12px', 
-                  border: selectedDept === f.properties.code ? '2px solid #3b82f6' : '1px solid #eee', 
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  backgroundColor: selectedDept === f.properties.code ? '#eff6ff' : '#ffffff'
-                }}
-              >
-                <h3 style={{ fontWeight: 'bold', marginBottom: '4px' }}>
-                  {f.properties.code} - {f.properties.nom}
-                </h3>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                  <span>Appartement: <strong>{f.properties.prix_m2_appt ? Math.round(f.properties.prix_m2_appt) + '€' : 'N/A'}</strong></span>
-                  <span>Maison: <strong>{f.properties.prix_m2_maison ? Math.round(f.properties.prix_m2_maison) + '€' : 'N/A'}</strong></span>
-                </div>
-              </div>
-            ))}
-        </div>
-      </section>
+  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+    <thead>
+      <tr style={{ borderBottom: '1px solid #ccc', color: '#666' }}>
+        <th style={{ textAlign: 'left', padding: '12px 4px' }}>Ville</th>
+        <th style={{ textAlign: 'right', padding: '12px 4px' }}>Prix m2 moyen<br/>appartement</th>
+        <th style={{ textAlign: 'right', padding: '12px 4px' }}>Prix m2 moyen<br/>maison</th>
+        <th style={{ textAlign: 'right', padding: '12px 4px' }}>Loyer m2 moyen<br/>appartement</th>
+        <th style={{ textAlign: 'right', padding: '12px 4px' }}>Loyer m2 moyen<br/>maison</th>
+      </tr>
+    </thead>
+    <tbody>
+      {data.features.map((f: any) => (
+        <tr key={f.id} style={{ borderBottom: '1px solid #eee' }}>
+          <td style={{ padding: '12px 4px', color: '#2563eb', cursor: 'pointer' }} onClick={() => setSelectedDept(f.properties.code)}>
+            {f.properties.nom}
+          </td>
+          <td style={{ textAlign: 'right', padding: '12px 4px' }}>
+            {f.properties.prix_m2_appt ? Math.round(f.properties.prix_m2_appt).toLocaleString('fr-FR') + ' €' : '-'}
+          </td>
+          <td style={{ textAlign: 'right', padding: '12px 4px' }}>
+            {f.properties.prix_m2_maison ? Math.round(f.properties.prix_m2_maison).toLocaleString('fr-FR') + ' €' : '-'}
+          </td>
+          <td style={{ textAlign: 'right', padding: '12px 4px' }}>
+            {f.properties.est_loyer_appt ? f.properties.est_loyer_appt + ' €' : '-'}
+          </td>
+          <td style={{ textAlign: 'right', padding: '12px 4px' }}>
+            {f.properties.est_loyer_maison ? f.properties.est_loyer_maison + ' €' : '-'}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>
 
       <section style={{ flex: 1, position: 'relative' }}>
         <MapContainer 
