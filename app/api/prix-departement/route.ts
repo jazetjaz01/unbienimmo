@@ -8,43 +8,39 @@ const RATIO_LOYER_VENTE = 0.0045;
 
 export async function GET() {
   try {
-    // 1. Récupération des prix de vente depuis la base
-    const { rows: prixData } = await query(`
-      SELECT code_departement, prix_m2_appt, prix_m2_maison 
+    // 1. Récupération des statistiques par département
+    const { rows: statsData } = await query(`
+      SELECT code_departement, prix_m2_moyen, prix_m2_appt, prix_m2_maison 
       FROM stats_departements_2025
     `);
     
+    // 2. Chargement du GeoJSON
     const filePath = path.join(process.cwd(), 'public/data/departements.geojson');
     const fileContent = await fs.readFile(filePath, 'utf8');
     const geojson = JSON.parse(fileContent);
 
-    const prixMap = new Map(prixData.map((p: any) => [p.code_departement, p]));
+    // 3. Création d'un index pour une fusion rapide
+    const statsMap = new Map(statsData.map((s: any) => [s.code_departement, s]));
 
-    // 2. Fusion et Calcul de l'estimation
+    // 4. Fusion des données
     geojson.features = geojson.features.map((feature: any) => {
-      const code = feature.properties.code;
-      const prix = prixMap.get(code);
-      
-      // Calcul estimatif du loyer au m²
-      const estLoyerAppt = prix ? Math.round(prix.prix_m2_appt * RATIO_LOYER_VENTE) : 0;
-      const estLoyerMaison = prix ? Math.round(prix.prix_m2_maison * RATIO_LOYER_VENTE) : 0;
+      const code = feature.properties.code; // Assure-toi que c'est bien la clé de ton GeoJSON
+      const stats = statsMap.get(code);
       
       return {
         ...feature,
-        id: code,
         properties: { 
           ...feature.properties, 
-          prix_m2_appt: prix?.prix_m2_appt || 0,
-          prix_m2_maison: prix?.prix_m2_maison || 0,
-          // Ajout des colonnes estimées pour le frontend
-          est_loyer_appt: estLoyerAppt,
-          est_loyer_maison: estLoyerMaison
+          // On injecte les valeurs directement
+          prix_m2_moyen: stats?.prix_m2_moyen || 0,
+          prix_m2_appt: stats?.prix_m2_appt || 0,
+          prix_m2_maison: stats?.prix_m2_maison || 0
         }
       };
     });
 
     return NextResponse.json(geojson);
   } catch (error) {
-    return NextResponse.json({ error: "Erreur lors de l'estimation" }, { status: 500 });
+    return NextResponse.json({ error: "Erreur lors de la fusion" }, { status: 500 });
   }
 }
