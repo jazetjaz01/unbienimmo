@@ -63,7 +63,7 @@ const footerSections = [
     links: [
       { title: "CGU", href: "/cgu" },
       { title: "Mentions légales", href: "/mentions" },
-      { title: "Vie privée", href: "/vie-privee" },
+      { title: "Vie privée", href: "/confidentialite" },
       { title: "Confidentialite", href: "/confidentialite" },
       { title: "Cookies", href: "/cookies" },
       { title: "Contact", href: "/contact" },
