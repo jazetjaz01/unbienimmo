@@ -181,6 +181,7 @@ export default function Page() {
 
             
           </div>
+          
         ) : (
           <>
             <h1 style={{ fontSize: '1.5rem', marginBottom: '12px', color: 'black', fontWeight: '600' }}>Carte des prix immobiliers</h1>
@@ -192,18 +193,59 @@ export default function Page() {
                   <th style={{ textAlign: 'right', padding: '12px 4px' }}>Prix m2 <br/>Maison</th>
                 </tr>
               </thead>
-              <tbody>
-                {(selectedDept ? communesData?.features : data.features)?.map((f: any) => (
-                  <tr key={f.properties.code || f.id} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '12px 4px', color: 'black', cursor: 'pointer', fontWeight: '600' }} 
-                        onClick={() => !selectedDept ? setSelectedDept(f.properties.code) : setSelectedCity(f)}>
-                      {f.properties.nom}
-                    </td>
-                    <td style={{ textAlign: 'right', padding: '12px 4px' }}>{f.properties.prix_m2_appt ? Math.round(f.properties.prix_m2_appt).toLocaleString('fr-FR') + ' €' : '-'}</td>
-                    <td style={{ textAlign: 'right', padding: '12px 4px' }}>{f.properties.prix_m2_maison ? Math.round(f.properties.prix_m2_maison).toLocaleString('fr-FR') + ' €' : '-'}</td>
-                  </tr>
-                ))}
-              </tbody>
+             <tbody>
+  {(selectedDept 
+    ? (Array.isArray(communesData) ? communesData : communesData?.features || []) 
+    : data.features
+  ).map((f: any) => {
+    // On extrait les variables de manière flexible
+    // Si f.properties existe, on regarde dedans, sinon on regarde directement dans f
+    const source = f.properties || f; 
+// AJOUTE CETTE LIGNE ICI
+    console.log("Structure de la commune :", { 
+        nom: source.nom, 
+        prixAppt: source.prix_m2_appt, 
+        prixMaison: source.prix_m2_maison,
+        objetComplet: source 
+    });
+
+
+    
+    const nom = source.nom || "Inconnu";
+    const prixAppt = source.prix_m2_appt;
+    const prixMaison = source.prix_m2_maison;
+    const code = source.code || f.id;
+
+    return (
+      <tr key={code} style={{ borderBottom: '1px solid #eee' }}>
+        <td 
+          style={{ padding: '12px 4px', color: 'black', cursor: 'pointer', fontWeight: '600' }} 
+          onClick={() => {
+            if (!selectedDept) {
+              setSelectedDept(code);
+            } else {
+              // On reconstruit un objet propre pour la suite
+              setSelectedCity({
+                properties: { code, nom, prix_m2_appt: prixAppt, prix_m2_maison: prixMaison }
+              });
+            }
+          }}
+        >
+          {nom}
+        </td>
+        
+        {/* Affichage des prix */}
+        <td style={{ textAlign: 'right', padding: '12px 4px' }}>
+          {prixAppt ? Math.round(prixAppt).toLocaleString('fr-FR') + ' €' : '-'}
+        </td>
+        <td style={{ textAlign: 'right', padding: '12px 4px' }}>
+          {prixMaison ? Math.round(prixMaison).toLocaleString('fr-FR') + ' €' : '-'}
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
             </table>
           </>
         )}

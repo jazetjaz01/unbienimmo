@@ -130,31 +130,41 @@ export default function MapContainer({
         )}
 
         {selectedDepartment && communesData && communesData.features && (
-          <Source key={`communes-${selectedDepartment}`} id="communes-source" type="geojson" data={communesData}>
-            <Layer
-              id="communes-layer"
-              type="fill"
-              paint={{
-                'fill-color': [
-                  'interpolate', ['linear'], ['coalesce', ['to-number', ['get', 'prix_m2']], 0],
-                  500, '#1e8449', 1000, '#27ae60', 1500, '#7fb800', 2000, '#a2d149', 
-                  2500, '#f1c40f', 3000, '#e67e22', 3500, '#c0392b'
-                ],
-                'fill-opacity': ['case', ['boolean', ['get', 'is_estimated'], false], 0.4, 0.8],
-                'fill-outline-color': '#ffffff'
-              }}
-            />
-            <Layer
-              id="communes-line-hover"
-              type="line"
-              source="communes-source"
-              paint={{
-                'line-color': '#3b82f6',
-                'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 3, 0]
-              }}
-            />
-          </Source>
-        )}
+  <Source key={`communes-${selectedDepartment}`} id="communes-source" type="geojson" data={communesData}>
+    <Layer
+      id="communes-layer"
+      type="fill"
+      minzoom={7} // <--- AJOUTE CETTE LIGNE
+      paint={{
+        'fill-color': [
+          'interpolate', 
+          ['linear'], 
+          ['coalesce', ['to-number', ['get', 'prix_m2_appt']], 0],
+          500, '#1e8449', 
+          1000, '#27ae60', 
+          1500, '#7fb800', 
+          2000, '#a2d149', 
+          2500, '#f1c40f', 
+          3000, '#e67e22', 
+          3500, '#c0392b'
+        ],
+        'fill-opacity': ['case', ['boolean', ['get', 'is_estimated'], false], 0.4, 0.8],
+        'fill-outline-color': '#ffffff'
+      }}
+    />
+    {/* Optionnel : tu peux aussi appliquer le minzoom au contour hover */}
+    <Layer
+      id="communes-line-hover"
+      type="line"
+      source="communes-source"
+      minzoom={7} 
+      paint={{
+        'line-color': '#3b82f6',
+        'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 3, 0]
+      }}
+    />
+  </Source>
+)}
       </Map>
     </div>
   );

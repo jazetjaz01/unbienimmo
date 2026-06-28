@@ -11,11 +11,18 @@ export async function GET(
 
   try {
     // 1. Récupération des prix depuis ta base PostgreSQL
-    const { rows: prixData } = await query(`
-      SELECT code_insee, prix_m2_moyen, nb_transactions 
-      FROM communes 
-      WHERE code_departement = $1
-    `, [code_departement]);
+    // Remplace ton bloc 1 (Récupération des prix) par ceci :
+const { rows: prixData } = await query(`
+  SELECT 
+    code_insee, 
+    prix_m2_appt, 
+    prix_m2_maison, 
+    prix_m2_moyen, 
+    nb_trans_appt, 
+    nb_trans_maison 
+  FROM communes 
+  WHERE code_departement = $1
+`, [code_departement]);
 
     // 2. Calcul de la moyenne départementale pour l'imputation
     const prixExistants = prixData.filter(p => p.prix_m2_moyen != null).map(p => parseFloat(p.prix_m2_moyen));
@@ -43,9 +50,10 @@ export async function GET(
         id: codeGeo,
         properties: { 
           ...feature.properties, 
-          prix_m2: hasData ? parseFloat(prixInfo.prix_m2_moyen) : avgPrixDept,
-          nb_transactions: hasData ? parseInt(prixInfo.nb_transactions) : 0,
-          is_estimated: !hasData
+          prix_m2_appt: prixInfo ? parseFloat(prixInfo.prix_m2_appt || 0) : 0,
+      prix_m2_maison: prixInfo ? parseFloat(prixInfo.prix_m2_maison || 0) : 0,
+      nb_trans_appt: prixInfo ? parseInt(prixInfo.nb_trans_appt || 0) : 0,
+      nb_trans_maison: prixInfo ? parseInt(prixInfo.nb_trans_maison || 0) : 0,
         }
       };
     });
