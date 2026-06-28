@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-
+import { Building2, Home, ArrowRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 interface FeatureProperties {
   code: string;
   nom: string;
@@ -97,7 +99,7 @@ export default function Page() {
 
   return (
     <main style={{ display: 'flex', height: '100vh', width: '100%' }}>
-      <section style={{ width: '650px', padding: '18px', borderRight: '1px solid #e5e7eb', overflowY: 'auto', backgroundColor: '#ffffff' }}>
+      <section style={{ width: '650px', padding: '18px', borderRight: '1px solid #e5e7eb', overflowY: 'auto', backgroundColor: '#F5F5F5' }}>
         
         <Breadcrumb style={{ marginBottom: '16px' }}>
           <BreadcrumbList>
@@ -118,26 +120,55 @@ export default function Page() {
         </Breadcrumb>
 
         {selectedCity ? (
-  <div>
-    {/* On utilise selectedCity.properties.nom qui vient du GeoJSON et non de la BDD */}
-    <h1 style={{ fontSize: '1.5rem', marginBottom: '12px', fontWeight: '600' }}>
+  // À placer dans ton bloc conditionnel {selectedCity ? (...)}
+<div className="flex flex-col space-y-6 rounded-xs p-4 bg-white">
+  {/* En-tête */}
+  <div className="space-y-1 ">
+    <h1 className="text-2xl font-semibold tracking-wide text-gray-900">
       Prix immobilier à {selectedCity.properties.nom}
     </h1>
-    
-    {cityDetails ? (
-      <div className="city-details-content">
-        <p>Prix m² moyen : {cityDetails.prix_m2_moyen ? Math.round(cityDetails.prix_m2_moyen).toLocaleString('fr-FR') + ' €' : 'N/A'}</p>
-        <p>Prix m² appartement : {cityDetails.prix_m2_appt ? Math.round(cityDetails.prix_m2_appt).toLocaleString('fr-FR') + ' €' : 'N/A'}</p>
-        <p>Prix m² maison : {cityDetails.prix_m2_maison ? Math.round(cityDetails.prix_m2_maison).toLocaleString('fr-FR') + ' €' : 'N/A'}</p>
-        <p>Nombre de transactions : {cityDetails.nb_transactions || 0}</p>
-      </div>
-    ) : (
-      <p>Chargement des statistiques...</p>
-    )}
-    <button onClick={handleBackToDept} style={{ marginTop: '20px', padding: '8px', background: '#f3f4f6' }}>
-      Retour au département
-    </button>
+    <p className="text-sm text-muted-foreground">
+      Estimations de prix Unbienimmo au {new Date().toLocaleDateString('fr-FR')}
+    </p>
   </div>
+
+  <div className="grid grid-cols-1 gap-4">
+  {/* Bloc Appartement */}
+  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+    <div className="flex items-center gap-3 font-semibold text-gray-900">
+      <Building2 className="w-5 h-5 text-gray-500" />
+      <span>Appartement</span>
+    </div>
+    <div className="text-lg font-bold">
+      {cityDetails?.prix_m2_appt ? `${Math.round(cityDetails.prix_m2_appt).toLocaleString('fr-FR')} €/m²` : 'N/A'}
+    </div>
+  </div>
+
+  {/* Bloc Maison */}
+  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+    <div className="flex items-center gap-3 font-semibold text-gray-900">
+      <Home className="w-5 h-5 text-gray-500" />
+      <span>Maison</span>
+    </div>
+    <div className="text-lg font-bold">
+      {cityDetails?.prix_m2_maison ? `${Math.round(cityDetails.prix_m2_maison).toLocaleString('fr-FR')} €/m²` : 'N/A'}
+    </div>
+  </div>
+</div>
+
+  {/* Actions */}
+  <div className="flex flex-col gap-3">
+    <Button className=" bg-teal-700 hover:bg-teal-800 h-12 text-base">
+      Estimer un bien en ligne
+    </Button>
+    <Button variant="outline" className="w-full border-blue-700 text-blue-700 hover:bg-blue-50 h-12 text-base">
+      Obtenir les prix de vente
+    </Button>
+    <Button variant="link" className="text-blue-700 p-0 justify-start h-auto mt-2">
+      Comparer les professionnels <ArrowRight className="ml-2 w-4 h-4" />
+    </Button>
+  </div>
+</div>
 ) : (
 
           <>
