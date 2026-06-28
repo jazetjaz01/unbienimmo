@@ -41,7 +41,7 @@ const footerSections = [
     links: [
       { title: "Estimations", href: "/Estimations" },
       { title: "Historique ventes", href: "/historique-ventes" },
-      { title: "Carte prix", href: "/carte-prix" },
+      { title: "Carte prix", href: "/prix-immobilier" },
       { title: "Vendre", href: "/vendre" },
       { title: "Acheter", href: "/acheter" },
       { title: "Location", href: "/location" },
