@@ -13,20 +13,32 @@ export async function GET(
 
   try {
     // Utilisation des colonnes réelles confirmées par ta requête SQL
-    const { rows } = await query(`
-      SELECT 
-        code_insee, 
-        code_departement,
-        prix_m2_appt, 
-        prix_m2_maison, 
-        prix_m2_moyen,
-        nb_transactions
-      FROM communes 
-      WHERE code_insee = $1 OR code_insee = $2
-    `, [
-      code, 
-      code.padStart(5, '0') // Gestion du zéro initial
-    ]);
+    // ... dans ton try { ... }
+const { rows } = await query(`
+  SELECT 
+    code_insee, 
+    code_departement,
+    prix_m2_appt, 
+    prix_m2_maison, 
+    prix_m2_moyen,
+    nb_trans_appt,
+    nb_trans_maison,
+    CASE 
+      WHEN nb_trans_appt < 50 THEN 1
+      WHEN nb_trans_appt < 200 THEN 2
+      WHEN nb_trans_appt < 500 THEN 3
+      ELSE 4 
+    END AS conf_appt,
+    CASE 
+      WHEN nb_trans_maison < 50 THEN 1
+      WHEN nb_trans_maison < 200 THEN 2
+      WHEN nb_trans_maison < 500 THEN 3
+      ELSE 4 
+    END AS conf_maison
+  FROM communes 
+  WHERE code_insee = $1 OR code_insee = $2
+`, [code, code.padStart(5, '0')]);
+// ...
 
     if (rows.length === 0) {
       return NextResponse.json({ error: 'Commune non trouvée' }, { status: 404 });
