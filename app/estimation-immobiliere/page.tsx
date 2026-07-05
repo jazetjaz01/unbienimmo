@@ -4,7 +4,7 @@ import Hero2 from "@/components/estimation-immobiliere/Hero2";
 import Hero3 from "@/components/estimation-immobiliere/Hero3";
 
 export const metadata = {
-  title: 'Estimation Immobilière en ligne - Alamiia',
+  title: 'Estimation Immobilière en ligne',
   description: 'Obtenez une estimation précise et gratuite de votre bien immobilier en quelques clics.',
 };
 
