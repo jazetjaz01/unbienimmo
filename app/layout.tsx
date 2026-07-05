@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script"; // Importation nécessaire
 import { Syncopate, Outfit } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,9 +16,22 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${outfitSans.variable} ${syncopateMono.variable} h-full antialiased`}>
+      {/* Chargement du script Google Tag */}
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-N1RK9BCF3F"
+      />
+      <Script id="google-analytics">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-N1RK9BCF3F');
+        `}
+      </Script>
+
       <body className="min-h-full flex flex-col font-sans">
         <TooltipProvider>
-          {/* LayoutWrapper n'a plus besoin de recevoir l'utilisateur */}
           <LayoutWrapper>
             {children}
           </LayoutWrapper>
