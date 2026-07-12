@@ -1,12 +1,18 @@
-"use client";
-
+import type { Metadata } from "next";
 import React from "react";
-import { 
-  ShieldCheck, 
-  Scale, 
-  Building2, 
+import {
+  ShieldCheck,
+  Scale,
+  Building2,
   Server
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Mentions Légales",
+  description: "Mentions légales du site Unbienimmo.com : éditeur, hébergeur et informations légales.",
+  alternates: { canonical: "/mentions" },
+  robots: { index: true, follow: true },
+};
 
 export default function MentionsLegalesPage() {
   

@@ -1,7 +1,13 @@
-"use client";
-
+import type { Metadata } from "next";
 import React from "react";
 import { Cookie, Settings, ShieldCheck, HelpCircle, AlertCircle } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Politique d'utilisation des Cookies",
+  description: "Comprenez comment Unbienimmo.com utilise les cookies et comment paramétrer vos préférences.",
+  alternates: { canonical: "/cookies" },
+  robots: { index: true, follow: true },
+};
 
 export default function CookiesPage() {
   

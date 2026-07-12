@@ -1,14 +1,20 @@
-"use client";
-
+import type { Metadata } from "next";
 import React from "react";
-import { 
-  Lock, 
-  Eye, 
-  UserCheck, 
-  Database, 
-  Share2, 
+import {
+  Lock,
+  Eye,
+  UserCheck,
+  Database,
+  Share2,
   HelpCircle
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Politique de Confidentialité",
+  description: "Découvrez comment Unbienimmo.com collecte, utilise et protège vos données personnelles.",
+  alternates: { canonical: "/confidentialite" },
+  robots: { index: true, follow: true },
+};
 
 export default function ConfidentialitePage() {
   

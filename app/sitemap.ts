@@ -23,13 +23,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: '', priority: 1.0 },
     { url: '/actualite', priority: 0.9 },
     { url: '/contact', priority: 0.5 },
-    { url: '/cgu', priority: 0.5 },
-    { url: '/confidentialite', priority: 0.5 },
-    { url: '/estimation-immobiliere', priority: 0.5 },
-    { url: '/estimer', priority: 0.5 },
-    { url: '/historique-ventes', priority: 0.5 },
-    { url: '/mentions', priority: 0.5 },
-    { url: '/prix-immobilier', priority: 0.5 },
+    { url: '/cgu', priority: 0.3 },
+    { url: '/confidentialite', priority: 0.3 },
+    { url: '/cookies', priority: 0.3 },
+    { url: '/mentions', priority: 0.3 },
+    { url: '/estimation-immobiliere', priority: 0.9 },
+    { url: '/estimer', priority: 0.7 },
+    { url: '/historique-ventes', priority: 0.6 },
+    { url: '/prix-immobilier', priority: 0.7 },
   ];
 
   const staticEntries = staticPages.map((page) => ({

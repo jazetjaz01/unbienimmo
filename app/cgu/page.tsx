@@ -1,14 +1,20 @@
-"use client";
-
+import type { Metadata } from "next";
 import React from "react";
-import { 
-  Scale, 
-  ShieldCheck, 
-  FileText, 
-  Gavel, 
+import {
+  Scale,
+  ShieldCheck,
+  FileText,
+  Gavel,
   Database,
   HelpCircle
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Conditions Générales d'Utilisation",
+  description: "Consultez les conditions générales d'utilisation du site Unbienimmo.com.",
+  alternates: { canonical: "/cgu" },
+  robots: { index: true, follow: true },
+};
 
 export default function CguPage() {
   

@@ -50,7 +50,7 @@ const Hero5 = () => {
           >
             <div className="mask-b-from-50% dark:mask-b-from-40% aspect-4/5 w-full rounded-t-lg">
               <img
-                alt=""
+                alt={`Estimation ${feature.title.toLowerCase()} en ligne`}
                 className="size-full rounded-t-lg object-cover"
                 src={feature.image}
               />
